@@ -1,0 +1,339 @@
+/* General Resets */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5; /* Light grey background */
+    color: #333;
+    font-size: 14px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Top Navigation Bar */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #313a46; /* Dark blue/grey */
+    color: white;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.top-nav .logo {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.top-nav .logo img {
+    margin-right: 10px;
+}
+
+.top-nav .main-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.top-nav .main-menu li {
+    margin-right: 20px;
+}
+
+.top-nav .main-menu a {
+    color: white;
+    text-decoration: none;
+    padding: 5px 0;
+    transition: color 0.3s ease;
+}
+
+.top-nav .main-menu a:hover {
+    color: #a0a0a0;
+}
+
+.top-nav .user-actions {
+    display: flex;
+    align-items: center;
+}
+
+.top-nav .top-search {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    margin-right: 15px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.top-nav .top-search::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.top-nav .user-actions i {
+    font-size: 1.2em;
+    margin-left: 15px;
+    cursor: pointer;
+}
+
+/* Main Layout */
+.main-layout {
+    display: flex;
+    flex: 1; /* Allows it to take up remaining height */
+}
+
+/* Left Sidebar */
+.sidebar {
+    width: 220px;
+    background-color: #ffffff; /* White background */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+    padding-top: 20px;
+    border-right: 1px solid #e0e0e0;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    margin-bottom: 5px;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: #555;
+    text-decoration: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar a i {
+    margin-right: 10px;
+    font-size: 1.1em;
+}
+
+.sidebar a:hover,
+.sidebar li.active a {
+    background-color: #e6f7ff; /* Light blue on hover/active */
+    color: #1890ff; /* Blue text */
+}
+
+/* Main Content Area */
+.content-area {
+    flex: 1;
+    padding: 20px;
+    background-color: #f0f2f5;
+}
+
+/* Toolbar */
+.toolbar {
+    background-color: #ffffff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+}
+
+.toolbar .status-filter .filter-btn {
+    background-color: #f0f2f5;
+    border: 1px solid #d9d9d9;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+}
+
+.toolbar .actions {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between action items */
+    flex-grow: 1; /* Allows it to take available space */
+    justify-content: flex-end; /* Pushes items to the right */
+}
+
+.toolbar .search-box {
+    position: relative;
+    margin-left: 10px;
+}
+
+.toolbar .search-box .search-input {
+    padding: 8px 12px 8px 30px; /* Left padding for icon */
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    width: 200px;
+    font-size: 14px;
+}
+
+.toolbar .search-box i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+}
+
+
+.btn-primary {
+    background-color: #1890ff; /* Blue */
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #40a9ff;
+}
+
+.btn-secondary {
+    background-color: #f0f2f5;
+    border: 1px solid #d9d9d9;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+    transition: background-color 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #e6e6e6;
+}
+
+.toolbar .pagination {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 20px; /* Space from search/new ticket */
+}
+
+.toolbar .pagination button {
+    background-color: #ffffff;
+    border: 1px solid #d9d9d9;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+}
+
+/* Table Styling */
+.table-container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; /* For horizontal scrolling on small screens */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table thead {
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+table th,
+table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+table th {
+    font-weight: 600;
+    color: #555;
+    white-space: nowrap; /* Prevent headers from wrapping too much */
+}
+
+table th i.fas.fa-sort,
+table th i.fas.fa-sort-up {
+    margin-left: 5px;
+    color: #bbb;
+    cursor: pointer;
+}
+
+table tbody tr:hover {
+    background-color: #fafafa;
+}
+
+table td {
+    color: #333;
+}
+
+/* Priority Badges */
+.priority {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.85em;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.priority.high {
+    background-color: #fff1f0;
+    color: #ff4d4f;
+    border: 1px solid #ffa39e;
+}
+.priority.medium {
+    background-color: #fffbe6;
+    color: #faad14;
+    border: 1px solid #ffe58f;
+}
+.priority.low {
+    background-color: #f6ffed;
+    color: #52c41a;
+    border: 1px solid #b7eb8f;
+}
+
+.priority i {
+    margin-right: 4px;
+    font-size: 0.9em;
+}
+
+/* Checkbox alignment */
+table input[type="checkbox"] {
+    margin: 0;
+    vertical-align: middle;
+} */
+
+td a {
+    color: black;
+    text-decoration: none;
+}
+
+/* Add to style.css */
+.modal {
+  position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+  overflow: auto; background: rgba(0,0,0,0.4);
+}
+.modal-content {
+  background: #fff; margin: 10% auto; padding: 20px; border-radius: 8px; width: 400px; position: relative;
+}
+.close-modal {
+  position: absolute; right: 16px; top: 8px; font-size: 28px; cursor: pointer;
+}
