@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $assignee = $_POST['assignee'] ?? '';
     $priority = $_POST['priority'] ?? '';
     $category = $_POST['category'] ?? '';
+    $creator = $_SESSION['user_email'];
 
     date_default_timezone_set('Asia/Colombo');
     $created_at = date('F j, Y h:i A');
@@ -55,8 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // If no errors, insert into database
     if (empty($errors)) {
         $attachments = implode(',', $uploaded_files); // Store as comma-separated paths
-        $stmt = $conn->prepare("INSERT INTO tb_ticket (tk_summary, tk_description, tk_priority, tk_created_at, org_id, ur_id,  cat_id) VALUES (?, ?, ?, ?,  ?, ?, ?)");
-        $stmt->bind_param("ssssiii", $summary, $description, $priority, $created_at, $organization, $contact,  $category);
+        $stmt = $conn->prepare("INSERT INTO tb_ticket (tk_summary, tk_description, tk_assignee,tk_creator,tk_priority, tk_created_at, org_id, ur_id,  cat_id) VALUES (?, ?, ?, ?,  ?, ?, ?,?,?)");
+        $stmt->bind_param("ssssssiii", $summary, $description, $assignee,$creator, $priority, $created_at, $organization, $contact,  $category);
 
         if ($stmt->execute()) {
             // Redirect or show success
@@ -108,7 +109,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Toolbar -->
                 <div>
                     <?php include 'components/tool_bar.php'; ?>
-
                 </div>
                 <!-- Table -->
                 <div>

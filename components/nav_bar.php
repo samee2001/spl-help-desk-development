@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
     <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="#">
+        <a class="navbar-brand d-flex align-items-center" href="index.php">
             <img src="your-logo.png" alt="Company Logo" style="height: 30px;" class="me-2">
             <span>Helpdesk</span>
         </a>

@@ -10,18 +10,21 @@
         </select>
     </div>
     <button class="btn btn-secondary" class="">Bulk Update</button>
-    <div class="input-group w-auto">
-        <input type="text" class="form-control" placeholder="Search...">
-        <button class="btn btn-outline-secondary" type="button">
+    <form action="index.php" method="GET" class="input-group w-auto">
+        <input type="text" name="search" class="form-control" placeholder="Search..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
+        <button class="btn btn-outline-secondary" type="submit">
             <i class="fas fa-search"></i>
         </button>
-    </div>
+    </form>
     <button class="btn btn-primary new-ticket-btn" data-bs-toggle="modal" data-bs-target="#newTicketModal">
         <i class="fas fa-plus"></i> New Ticket
     </button>
-    <div class="ms-auto d-flex align-items-center gap-2">
-        <span>1 - 50 of 198</span>
-        <button class="btn btn-outline-secondary btn-sm"><i class="fas fa-chevron-left"></i></button>
-        <button class="btn btn-outline-secondary btn-sm"><i class="fas fa-chevron-right"></i></button>
-    </div>
+    <?php 
+       if (isset($total_records) && $total_records > 0): ?>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <span><?php echo ($start_record + 1) . ' - ' . min($start_record + $records_per_page, $total_records) . ' of ' . $total_records; ?></span>
+            <a href="?page=<?php echo max(1, $current_page - 1); ?>" class="btn btn-outline-secondary btn-sm"><i class="fas fa-chevron-left"></i></a>
+            <a href="?page=<?php echo min($total_pages, $current_page + 1); ?>" class="btn btn-outline-secondary btn-sm"><i class="fas fa-chevron-right"></i></a>
+        </div>
+    <?php endif; ?>
 </div>

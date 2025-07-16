@@ -1,6 +1,5 @@
 <?php
 include 'configs/db_connection.php';
-
 ?>
 <!-- Success Alert (hidden by default) -->
 <div id="successAlert" class="alert alert-success alert-dismissible fade show d-none" role="alert">
@@ -30,24 +29,85 @@ include 'configs/db_connection.php';
             <?php
 
             // Database connection (adjust as needed)
+            $search_query = $_GET['search'] ?? '';
+            // Base SQL with JOINs to get names instead of IDs
+            $sql = "SELECT 
+                        t.tk_id, t.tk_summary, t.tk_priority, t.tk_created_at, t.tk_updated_at, t.tk_due_date as due_date,
+                        t.tk_description,
+                        t.tk_creator as creator_name,
+                        assignee.ur_name as assignee_name,
+                        org.org_name,
+                        cat.cat_name,
+                        st.status
+                    FROM tb_ticket t
+                    LEFT JOIN tb_user creator ON t.tk_creator = creator.ur_email
+                    LEFT JOIN tb_user assignee ON t.tk_assignee = assignee.ur_id
+                    LEFT JOIN tb_organization org ON t.org_id = org.org_id
+                    LEFT JOIN tb_category cat ON t.cat_id = cat.cat_id
+                    LEFT JOIN tb_status st ON t.st_id = st.st_id";
+
+            $params = [];
+            $types = '';
+
+            if (!empty($search_query)) {
+                // You can add more fields to search in
+                $sql .= " WHERE t.tk_summary LIKE ? 
+                          OR t.tk_description LIKE ? 
+                          OR t.tk_id LIKE ? 
+                          OR t.tk_creator LIKE ? 
+                          OR assignee.ur_name LIKE ? 
+                          OR org.org_name LIKE ? 
+                          OR t.tk_priority LIKE ?
+                          OR cat.cat_name LIKE ?
+                          OR st.status LIKE ?";
+                $search_param = "%{$search_query}%";
+                $params = array_fill(0, 9, $search_param); // We have 9 placeholders
+                $types = str_repeat('s', 9);
+            }
+            
+            $types .= 'ii';
+            $sql .= " ORDER BY t.tk_id DESC LIMIT ?, ?";
+            
+            // Pagination logic
+            $current_page = $_GET['page'] ?? 1;
+            $records_per_page = 20;
+            $start_record = ($current_page - 1) * $records_per_page;
+
+            $params[] = $start_record;
+            $params[] = $records_per_page;
 
             // Fetch all tickets
-            $result = $conn->query("SELECT * FROM tb_ticket ORDER BY tk_created_at DESC");
+            if (!empty($params)) {
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param($types, ...$params);
+                $stmt->execute();
+                $result = $stmt->get_result();
+            } else {
+                $result = $conn->query($sql);
+            }
+
+            // Count total records (for pagination display)
+            $count_sql = "SELECT COUNT(*) FROM tb_ticket";
+            $count_result = $conn->query($count_sql);
+            $total_records = $count_result->fetch_row()[0];
+            $total_pages = ceil($total_records / $records_per_page);
+
+            
             if ($result && $result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
                     // Adjust these fields to match your table columns if needed
 
                     $id = $row['tk_id'];
                     $summary = htmlspecialchars($row['tk_summary']);
-                    $assignee = isset($row['tk_assignee']) ? htmlspecialchars($row['tk_assignee']) : '';
-                    $creator = isset($row['ur_id']) ? htmlspecialchars($row['ur_id']) : '';
-                    $organization = htmlspecialchars($row['org_id']); // Replace with JOIN for name if needed
+                    $assignee = isset($row['assignee_name']) ? htmlspecialchars($row['assignee_name']) : 'Unassigned';
+                    $creator = isset($row['creator_name']) ? htmlspecialchars($row['creator_name']) : 'N/A';
+                    $organization = isset($row['org_name']) ? htmlspecialchars($row['org_name']) : 'N/A';
                     $priority = htmlspecialchars($row['tk_priority']);
-                    $category = htmlspecialchars($row['cat_id']); // Replace with JOIN for name if needed
-                    $status = htmlspecialchars($row['st_id']);
+                    $category = isset($row['cat_name']) ? htmlspecialchars($row['cat_name']) : 'N/A';
+                    $status = isset($row['status']) ? htmlspecialchars($row['status']) : 'N/A';
                     $created = date('M d, Y', strtotime($row['tk_created_at']));
-                    $updated = isset($row['tk_updated_at']) ? date('M d, Y', strtotime($row['tk_updated_at'])) : '';
-                    $due_date = isset($row['due_date']) && $row['due_date'] ? date('M d, Y', strtotime($row['due_date'])) : '';
+                    //$updated = isset($row['tk_updated_at']) ? date('M d, Y', strtotime($row['tk_updated_at'])) : '';
+                    //$due_date = isset($row['due_date']) && $row['due_date'] ? date('M d, Y', strtotime($row['due_date'])) : '';
 
                     // Priority badge color
                     $priorityBadge = 'bg-secondary';
@@ -68,168 +128,26 @@ include 'configs/db_connection.php';
                     echo "<td><a href='#' class='text-decoration-none'>{$category}</a></td>";
                     echo "<td><a href='#' class='text-decoration-none'>{$status}</a></td>";
                     echo "<td><a href='#' class='text-decoration-none'>{$created}</a></td>";
-                    echo "<td><a href='#' class='text-decoration-none'>{$updated}</a></td>";
-                    echo "<td><a href='#' class='text-decoration-none'>{$due_date}</a></td>";
+                //    echo "<td><a href='#' class='text-decoration-none'>{$updated}</a></td>";
+                //    echo "<td><a href='#' class='text-decoration-none'>{$due_date}</a></td>";
                     echo "</tr>";
                 }
             } else {
-                echo "<tr><td colspan='12'>No tickets found.</td></tr>";
+                if (!empty($search_query)) {
+                    echo "<tr><td colspan='12' class='text-center'>No tickets found matching your search for \"" . htmlspecialchars($search_query) . "\".</td></tr>";
+                } else {
+                    echo "<tr><td colspan='12' class='text-center'>No tickets found.</td></tr>";
+                }
             }
-        
+
             ?>
-            <!-- <tr class="ticket-row" data-bs-toggle="offcanvas" data-bs-target="#ticketDetailsOffcanvas" aria-controls="ticketDetailsOffcanvas">
-                <td><input type="checkbox"></td>
-                <td><a href="#" class="text-decoration-none">3806</a></td>
-                <td><a href="#" class="text-decoration-none">Request for Remote Access to SAP</a></td>
-                <td>
-                    <a href="#" id="assigneeBtn" class="text-decoration-none">Accept</a>
-                </td>
-                <td><a href="#" class="text-decoration-none">sumuduw@sadaharitha.com</a></td>
-                <td><a href="#" class="text-decoration-none">SPL</a></td>
-                <td><a href="#" class="text-decoration-none"><span class="badge bg-danger"><i class="fas fa-arrow-up"></i> High</span></a></td>
-                <td><a href="#" class="text-decoration-none">SAP - Maleesha</a></td>
-                <td><a href="#" class="text-decoration-none">open</a></td>
-                <td><a href="#" class="text-decoration-none">Jun 19, 2025</a></td>
-                <td><a href="#" class="text-decoration-none">3d ago</a></td>
-            </tr>
-            <tr class="ticket-row" data-bs-toggle="offcanvas" data-bs-target="#ticketDetailsOffcanvas" aria-controls="ticketDetailsOffcanvas">
-                <td><input type="checkbox"></td>
-                <td><a href="#" class="text-decoration-none">3707</a></td>
-                <td><a href="#" class="text-decoration-none">Maturity date</a></td>
-                <td><a href="#" class="text-decoration-none">Randima De Silva</a></td>
-                <td><a href="#" class="text-decoration-none">Tharanga Amarasinghe</a></td>
-                <td><a href="#" class="text-decoration-none">SPLIT</a></td>
-                <td><a href="#" class="text-decoration-none"><span class="badge bg-warning text-dark"><i class="fas fa-arrow-right"></i> Medium</span></a>
-                </td>
-                <td><a href="#" class="text-decoration-none">Software</a></td>
-                <td><a href="#" class="text-decoration-none">open</a></td>
-                <td><a href="#" class="text-decoration-none">May 30, 2025</a></td>
-                <td><a href="#" class="text-decoration-none">May 30, 2025</a></td>
-            </tr>
-            <tr class="ticket-row" data-bs-toggle="offcanvas" data-bs-target="#ticketDetailsOffcanvas" aria-controls="ticketDetailsOffcanvas">
-                <td><input type="checkbox"></td>
-                <td><a href="#" class="text-decoration-none">3585</a></td>
-                <td><a href="#" class="text-decoration-none">CRM</a></td>
-                <td><a href="#" class="text-decoration-none">Randima De Silva</a></td>
-                <td><a href="#" class="text-decoration-none">Kasun Mendis</a></td>
-                <td><a href="#" class="text-decoration-none">SPL</a></td>
-                <td><a href="#" class="text-decoration-none"><span class="badge bg-danger"><i class="fas fa-arrow-up"></i> High</span></a></td>
-                <td><a href="#" class="text-decoration-none">CRM - Randima</a></td>
-                <td><a href="#" class="text-decoration-none">open</a></td>
-                <td><a href="#" class="text-decoration-none">May 14, 2025</a></td>
-                <td><a href="#" class="text-decoration-none">May 14, 2025</a></td>
-            </tr>
-            <tr class="ticket-row" data-bs-toggle="offcanvas" data-bs-target="#ticketDetailsOffcanvas" aria-controls="ticketDetailsOffcanvas">
-                <td><input type="checkbox"></td>
-                <td><a href="#" class="text-decoration-none">3753</a></td>
-                <td><a href="#" class="text-decoration-none">Agreement number : 25083174786AE</a></td>
-                <td><a href="#" class="text-decoration-none">Randima De Silva</a></td>
-                <td><a href="#" class="text-decoration-none">sanjeewani@sadaharitha.com</a></td>
-                <td><a href="#" class="text-decoration-none">SPL</a></td>
-                <td><a href="#" class="text-decoration-none"><span class="badge bg-danger"><i class="fas fa-arrow-up"></i> High</span></a></td>
-                <td><a href="#" class="text-decoration-none">Agreement - Randima</a></td>
-                <td><a href="#" class="text-decoration-none">open</a></td>
-                <td><a href="#" class="text-decoration-none">Jun 06, 2025</a></td>
-                <td><a href="#" class="text-decoration-none">Jun 06, 2025</a></td>
-            </tr>
-            <tr class="ticket-row" data-bs-toggle="offcanvas" data-bs-target="#ticketDetailsOffcanvas" aria-controls="ticketDetailsOffcanvas">
-                <td><input type="checkbox"></td>
-                <td><a href="#" class="text-decoration-none">3881</a></td>
-                <td><a href="#" class="text-decoration-none">Agreement</a></td>
-                <td><a href="#" class="text-decoration-none">Randima De Silva</a></td>
-                <td><a href="#" class="text-decoration-none">Piyumika Premathilaka</a></td>
-                <td><a href="#" class="text-decoration-none">SPL</a></td>
-                <td><a href="#" class="text-decoration-none"><span class="badge bg-danger"><i class="fas fa-arrow-up"></i> High</span></a></td>
-                <td><a href="#" class="text-decoration-none">Agreement - Randima</a></td>
-                <td><a href="#" class="text-decoration-none">open</a></td>
-                <td><a href="#" class="text-decoration-none">5d ago</a></td>
-                <td><a href="#" class="text-decoration-none">5d ago</a></td>
-            </tr>
-            <tr class="ticket-row" data-bs-toggle="offcanvas" data-bs-target="#ticketDetailsOffcanvas" aria-controls="ticketDetailsOffcanvas">
-                <td><input type="checkbox"></td>
-                <td><a href="#" class="text-decoration-none">3300</a></td>
-                <td><a href="#" class="text-decoration-none">Agreement No. 25002673214P</a></td>
-                <td><a href="#" class="text-decoration-none">Randima De Silva</a></td>
-                <td><a href="#" class="text-decoration-none">sanjeewani@sadaharitha.com</a></td>
-                <td><a href="#" class="text-decoration-none">SPL</a></td>
-                <td><a href="#" class="text-decoration-none"><span class="badge bg-danger"><i class="fas fa-arrow-up"></i> High</span></a></td>
-                <td><a href="#" class="text-decoration-none">Agreement - Randima</a></td>
-                <td><a href="#" class="text-decoration-none">open</a></td>
-                <td><a href="#" class="text-decoration-none">Apr 01, 2025</a></td>
-                <td><a href="#" class="text-decoration-none">Apr 01, 2025</a></td>
-            </tr>
-            <tr class="ticket-row" data-bs-toggle="offcanvas" data-bs-target="#ticketDetailsOffcanvas" aria-controls="ticketDetailsOffcanvas">
-                <td><input type="checkbox"></td>
-                <td><a href="#" class="text-decoration-none">3799</a></td>
-                <td><a href="#" class="text-decoration-none">Memo on Guidelines for Converting Deactivate...</a></td>
-                <td><a href="#" class="text-decoration-none">Randima De Silva</a></td>
-                <td><a href="#" class="text-decoration-none">Nikesha Nilmini</a></td>
-                <td><a href="#" class="text-decoration-none">SPL</a></td>
-                <td><a href="#" class="text-decoration-none"><span class="badge bg-danger"><i class="fas fa-arrow-up"></i> High</span></a></td>
-                <td><a href="#" class="text-decoration-none">Agreement - Randima</a></td>
-                <td><a href="#" class="text-decoration-none">open</a></td>
-                <td><a href="#" class="text-decoration-none">Jun 18, 2025</a></td>
-                <td><a href="#" class="text-decoration-none">Jun 18, 2025</a></td>
-            </tr>
-            <tr class="ticket-row" data-bs-toggle="offcanvas" data-bs-target="#ticketDetailsOffcanvas" aria-controls="ticketDetailsOffcanvas">
-                <td><input type="checkbox"></td>
-                <td><a href="#" class="text-decoration-none">3723</a></td>
-                <td><a href="#" class="text-decoration-none">Agreement</a></td>
-                <td><a href="#" class="text-decoration-none">Randima De Silva</a></td>
-                <td><a href="#" class="text-decoration-none">emblip@iy2@sadaharitha.com</a></td>
-                <td><a href="#" class="text-decoration-none">SPL</a></td>
-                <td><a href="#" class="text-decoration-none"><span class="badge bg-danger"><i class="fas fa-arrow-up"></i> High</span></a></td>
-                <td><a href="#" class="text-decoration-none">Agreement - Randima</a></td>
-                <td><a href="#" class="text-decoration-none">open</a></td>
-                <td><a href="#" class="text-decoration-none">Jun 02, 2025</a></td>
-                <td><a href="#" class="text-decoration-none">Jun 03, 2025</a></td>
-            </tr>
-            <tr class="ticket-row" data-bs-toggle="offcanvas" data-bs-target="#ticketDetailsOffcanvas" aria-controls="ticketDetailsOffcanvas">
-                <td><input type="checkbox"></td>
-                <td><a href="#" class="text-decoration-none">3877</a></td>
-                <td><a href="#" class="text-decoration-none">Agreement Cancellation- 25061975101AG/250...</a></td>
-                <td><a href="#" class="text-decoration-none">Randima De Silva</a></td>
-                <td><a href="#" class="text-decoration-none">Dilini Madubashini</a></td>
-                <td><a href="#" class="text-decoration-none">SPL</a></td>
-                <td><a href="#" class="text-decoration-none"><span class="badge bg-danger"><i class="fas fa-arrow-up"></i> High</span></a></td>
-                <td><a href="#" class="text-decoration-none">Agreement - Randima</a></td>
-                <td><a href="#" class="text-decoration-none">open</a></td>
-                <td><a href="#" class="text-decoration-none">6d ago</a></td>
-                <td><a href="#" class="text-decoration-none">6d ago</a></td>
-            </tr>
-            <tr class="ticket-row" data-bs-toggle="offcanvas" data-bs-target="#ticketDetailsOffcanvas" aria-controls="ticketDetailsOffcanvas">
-                <td><input type="checkbox"></td>
-                <td><a href="#" class="text-decoration-none">3790</a></td>
-                <td><a href="#" class="text-decoration-none">Agreement No: 20102947257A</a></td>
-                <td><a href="#" class="text-decoration-none">Randima De Silva</a></td>
-                <td><a href="#" class="text-decoration-none">sanjeewani@sadaharitha.com</a></td>
-                <td><a href="#" class="text-decoration-none">SPL</a></td>
-                <td><a href="#" class="text-decoration-none"><span class="badge bg-danger"><i class="fas fa-arrow-up"></i> High</span></a></td>
-                <td><a href="#" class="text-decoration-none">Agreement - Randima</a></td>
-                <td><a href="#" class="text-decoration-none">open</a></td>
-                <td><a href="#" class="text-decoration-none">Jun 17, 2025</a></td>
-                <td><a href="#" class="text-decoration-none">Jun 17, 2025</a></td>
-            </tr>
-            <tr class="ticket-row" data-bs-toggle="offcanvas" data-bs-target="#ticketDetailsOffcanvas" aria-controls="ticketDetailsOffcanvas">
-                <td><input type="checkbox"></td>
-                <td><a href="#" class="text-decoration-none">3896</a></td>
-                <td><a href="#" class="text-decoration-none">Agreement</a></td>
-                <td><a href="#" class="text-decoration-none">Randima De Silva</a></td>
-                <td><a href="#" class="text-decoration-none">Piyumika Premathilaka</a></td>
-                <td><a href="#" class="text-decoration-none">SPL</a></td>
-                <td><a href="#" class="text-decoration-none"><span class="badge bg-danger"><i class="fas fa-arrow-up"></i> High</span></a></td>
-                <td><a href="#" class="text-decoration-none">Agreement - Randima</a></td>
-                <td><a href="#" class="text-decoration-none">open</a></td>
-                <td><a href="#" class="text-decoration-none">3d ago</a></td>
-                <td><a href="#" class="text-decoration-none">3d ago</a></td>
-            </tr> -->
 
         </tbody>
     </table>
 </div>
 
 <!-- Offcanvas for Ticket Details -->
-<div class="offcanvas offcanvas-bottom" tabindex="-1" id="ticketDetailsOffcanvas" aria-labelledby="ticketDetailsLabel" style="height: 60vh;">
+<!-- <div class="offcanvas offcanvas-bottom" tabindex="-1" id="ticketDetailsOffcanvas" aria-labelledby="ticketDetailsLabel" style="height: 60vh;">
     <div class="offcanvas-header d-flex flex-column align-items-start">
         <div class="w-100 d-flex justify-content-between align-items-center">
             <div>
@@ -276,23 +194,25 @@ include 'configs/db_connection.php';
             </form>
         </div>
     </div>
-</div>
+</div> -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var assigneeBtn = document.getElementById('assigneeBtn');
-        var successAlert = document.getElementById('successAlert');
-        if (assigneeBtn) {
-            assigneeBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     var assigneeBtn = document.getElementById('assigneeBtn');
+    //     var successAlert = document.getElementById('successAlert');
+    //     if (assigneeBtn) {
+    //         assigneeBtn.addEventListener('click', function(e) {
+    //             e.stopPropagation();
 
-                assigneeBtn.outerHTML = '<a href="#" class="text-decoration-none">Maleesha Dewashan</a>';
+    //             assigneeBtn.outerHTML = '<a href="#" class="text-decoration-none">Maleesha Dewashan</a>';
 
-                successAlert.classList.remove('d-none');
+    //             successAlert.classList.remove('d-none');
 
-                setTimeout(function() {
-                    if (successAlert) successAlert.classList.add('d-none');
-                }, 2000);
-            });
-        }
-    });
+    //             setTimeout(function() {
+    //                 if (successAlert) successAlert.classList.add('d-none');
+    //             }, 2000);
+    //         });
+    //     }
+    // });
 </script>
+
+<!-- <?php //include 'components/tool_bar.php'; ?>  -->
