@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $attachments = implode(',', $uploaded_files); // Store as comma-separated paths
         $stmt = $conn->prepare("INSERT INTO tb_ticket (tk_summary, tk_description, tk_assignee,tk_creator,tk_priority, tk_created_at, org_id, ur_id,  cat_id) VALUES (?, ?, ?, ?,  ?, ?, ?,?,?)");
-        $stmt->bind_param("ssssssiii", $summary, $description, $assignee,$creator, $priority, $created_at, $organization, $contact,  $category);
+        $stmt->bind_param("ssssssiii", $summary, $description, $assignee, $creator, $priority, $created_at, $organization, $contact,  $category);
 
         if ($stmt->execute()) {
             // Redirect or show success
@@ -69,12 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-<!-- Display errors if any -->
-<?php if (!empty($errors)): ?>
-    <div class="alert alert-danger">
-        <?php foreach ($errors as $e) echo htmlspecialchars($e) . "<br>"; ?>
-    </div>
-<?php endif; ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -99,7 +93,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="mb-3">
             <?php include 'components/nav_bar.php'; ?>
         </div>
-
+        <!-- Display errors if any -->
+        <div style="position: relative;">
+            <?php if (!empty($errors)): ?>
+                <div class="alert alert-danger alert-dismissible fade show position-absolute top-0 start-50 translate-middle-x mt-3 shadow" style="z-index: 1050; min-width: 300px; max-width: 500px;" role="alert">
+                    <?php foreach ($errors as $e) echo htmlspecialchars($e) . "<br>"; ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+        </div>
         <div class="row g-0">
             <!-- Sidebar -->
             <?php include 'components/side_bar.php'; ?>
@@ -109,6 +111,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Toolbar -->
                 <div>
                     <?php include 'components/tool_bar.php'; ?>
+                    <script>
+                        // Pass the selected status to the table via URL parameter
+                        document.querySelector('.form-select').addEventListener('change', function() {
+                            var status = this.value;
+                            window.location.href = 'index.php?status=' + status;
+                        });
+                    </script>
                 </div>
                 <!-- Table -->
                 <div>

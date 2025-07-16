@@ -1,12 +1,13 @@
 <div class="d-flex flex-wrap align-items-center justify-content-center mb-3 gap-3">
     <div>
         <select class="form-select">
-            <option value="open">Open</option>
-            <option value="waiting">Waiting</option>
-            <option value="unassigned">Unassigned</option>
-            <option value="mytickets">My Tickets</option>
-            <option value="all">All</option>
-            <option value="active-alerts">Active Alerts</option>
+            <option value="">Select Status</option>
+            <option value="Open">Open</option>
+            <option value="Waiting">Waiting</option>
+            <option value="Unassigned">Unassigned</option>
+            <option value="My Tickets">My Tickets</option>
+            <option value="All">All</option>
+            <option value="Active Alerts">Active Alerts</option>
         </select>
     </div>
     <button class="btn btn-secondary" class="">Bulk Update</button>
@@ -19,6 +20,14 @@
     <button class="btn btn-primary new-ticket-btn" data-bs-toggle="modal" data-bs-target="#newTicketModal">
         <i class="fas fa-plus"></i> New Ticket
     </button>
+    <!-- change of the status -->
+    <script>
+        // Pass the selected status to the table via URL parameter
+        document.querySelector('.form-select').addEventListener('change', function() {
+            var status = this.value;
+            window.location.href = 'index.php?status=' + status;
+        });
+    </script>
     <?php 
        if (isset($total_records) && $total_records > 0): ?>
         <div class="ms-auto d-flex align-items-center gap-2">

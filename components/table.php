@@ -30,6 +30,7 @@ include 'configs/db_connection.php';
 
             // Database connection (adjust as needed)
             $search_query = $_GET['search'] ?? '';
+            $status_filter = $_GET['status'] ?? ''; // Get the selected status filter
             // Base SQL with JOINs to get names instead of IDs
             $sql = "SELECT 
                         t.tk_id, t.tk_summary, t.tk_priority, t.tk_created_at, t.tk_updated_at, t.tk_due_date as due_date,
@@ -38,7 +39,7 @@ include 'configs/db_connection.php';
                         assignee.ur_name as assignee_name,
                         org.org_name,
                         cat.cat_name,
-                        st.status
+                        t.status_name
                     FROM tb_ticket t
                     LEFT JOIN tb_user creator ON t.tk_creator = creator.ur_email
                     LEFT JOIN tb_user assignee ON t.tk_assignee = assignee.ur_id
@@ -59,10 +60,17 @@ include 'configs/db_connection.php';
                           OR org.org_name LIKE ? 
                           OR t.tk_priority LIKE ?
                           OR cat.cat_name LIKE ?
-                          OR st.status LIKE ?";
-                $search_param = "%{$search_query}%";
+                          OR t.status_name LIKE ?";               
+                $search_param = "%{$search_query}%";                
                 $params = array_fill(0, 9, $search_param); // We have 9 placeholders
                 $types = str_repeat('s', 9);
+            }
+            
+            // Apply status filter if selected
+            if (!empty($status_filter)) {
+                $sql .= (empty($search_query) ? " WHERE" : " AND") . " t.status_name = ?";
+                $params[] = $status_filter;
+                $types .= 's';
             }
             
             $types .= 'ii';
@@ -104,7 +112,7 @@ include 'configs/db_connection.php';
                     $organization = isset($row['org_name']) ? htmlspecialchars($row['org_name']) : 'N/A';
                     $priority = htmlspecialchars($row['tk_priority']);
                     $category = isset($row['cat_name']) ? htmlspecialchars($row['cat_name']) : 'N/A';
-                    $status = isset($row['status']) ? htmlspecialchars($row['status']) : 'N/A';
+                    $status = isset($row['status_name']) ? htmlspecialchars($row['status_name']) : 'N/A';
                     $created = date('M d, Y', strtotime($row['tk_created_at']));
                     //$updated = isset($row['tk_updated_at']) ? date('M d, Y', strtotime($row['tk_updated_at'])) : '';
                     //$due_date = isset($row['due_date']) && $row['due_date'] ? date('M d, Y', strtotime($row['due_date'])) : '';
