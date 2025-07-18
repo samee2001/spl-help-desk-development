@@ -60,22 +60,22 @@ include 'configs/db_connection.php';
                           OR org.org_name LIKE ? 
                           OR t.tk_priority LIKE ?
                           OR cat.cat_name LIKE ?
-                          OR t.status_name LIKE ?";               
-                $search_param = "%{$search_query}%";                
+                          OR t.status_name LIKE ?";
+                $search_param = "%{$search_query}%";
                 $params = array_fill(0, 9, $search_param); // We have 9 placeholders
                 $types = str_repeat('s', 9);
             }
-            
+
             // Apply status filter if selected
             if (!empty($status_filter)) {
                 $sql .= (empty($search_query) ? " WHERE" : " AND") . " t.status_name = ?";
                 $params[] = $status_filter;
                 $types .= 's';
             }
-            
+
             $types .= 'ii';
             $sql .= " ORDER BY t.tk_id DESC LIMIT ?, ?";
-            
+
             // Pagination logic
             $current_page = $_GET['page'] ?? 1;
             $records_per_page = 20;
@@ -100,7 +100,7 @@ include 'configs/db_connection.php';
             $total_records = $count_result->fetch_row()[0];
             $total_pages = ceil($total_records / $records_per_page);
 
-            
+
             if ($result && $result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
                     // Adjust these fields to match your table columns if needed
@@ -123,7 +123,21 @@ include 'configs/db_connection.php';
                     elseif (strtolower($priority) === 'medium') $priorityBadge = 'bg-warning text-dark';
                     elseif (strtolower($priority) === 'low') $priorityBadge = 'bg-success';
 
-                    echo "<tr class='ticket-row' data-bs-toggle='offcanvas' data-bs-target='#ticketDetailsOffcanvas' aria-controls='ticketDetailsOffcanvas'>";
+                    echo "<tr class='ticket-row' 
+                            data-bs-toggle='offcanvas' 
+                            data-bs-target='#ticketDetailsOffcanvas' 
+                            aria-controls='ticketDetailsOffcanvas'
+                            data-id='{$id}'
+                            data-summary='{$summary}'
+                            data-assignee='{$assignee}'
+                            data-creator='{$creator}'
+                            data-organization='{$organization}'
+                            data-priority='{$priority}'
+                            data-category='{$category}'
+                            data-status='{$status}'
+                            data-created='{$created}'
+                            data-description='" . htmlspecialchars($row['tk_description']) . "'
+                        >";
                     echo "<td><input type='checkbox'></td>";
                     echo "<td><a href='#' class='text-decoration-none'>{$id}</a></td>";
                     echo "<td><a href='#' class='text-decoration-none'>{$summary}</a></td>";
@@ -136,8 +150,8 @@ include 'configs/db_connection.php';
                     echo "<td><a href='#' class='text-decoration-none'>{$category}</a></td>";
                     echo "<td><a href='#' class='text-decoration-none'>{$status}</a></td>";
                     echo "<td><a href='#' class='text-decoration-none'>{$created}</a></td>";
-                //    echo "<td><a href='#' class='text-decoration-none'>{$updated}</a></td>";
-                //    echo "<td><a href='#' class='text-decoration-none'>{$due_date}</a></td>";
+                    //    echo "<td><a href='#' class='text-decoration-none'>{$updated}</a></td>";
+                    //    echo "<td><a href='#' class='text-decoration-none'>{$due_date}</a></td>";
                     echo "</tr>";
                 }
             } else {
@@ -155,24 +169,26 @@ include 'configs/db_connection.php';
 </div>
 
 <!-- Offcanvas for Ticket Details -->
-<!-- <div class="offcanvas offcanvas-bottom" tabindex="-1" id="ticketDetailsOffcanvas" aria-labelledby="ticketDetailsLabel" style="height: 60vh;">
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="ticketDetailsOffcanvas" aria-labelledby="ticketDetailsLabel" style="height: 60vh;">
     <div class="offcanvas-header d-flex flex-column align-items-start">
         <div class="w-100 d-flex justify-content-between align-items-center">
             <div>
-                <span class="fw-bold">#3906 Online quotation</span>
+                <span class="fw-bold">
+                    <span id="offcanvas-ticket-id"></span> - <span id="offcanvas-ticket-summary"></span>
+                </span>
                 <i class="fas fa-pen ms-2" style="cursor:pointer;"></i>
             </div>
-            <div>
-                <button class="btn btn-outline-success btn-sm me-2">Accept</button>
-                <button class="btn btn-outline-secondary btn-sm me-2 " data-bs-dismiss="offcanvas">Close</button>
+            <div class="d-flex align-items-center">
+                <button class="btn btn-outline-success btn-sm me-2" id="acceptBtn" value="accept">Accept</button>
+                <button class="btn btn-outline-secondary btn-sm me-2" id="closeBtn" data-bs-dismiss="offcanvas">Close</button>
                 <div class="btn-group">
                     <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-chevron-down"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#">Forward</a></li>
-                        <li><a class="dropdown-item" href="#">Print</a></li>
-                        <li><a class="dropdown-item" href="#">Delete</a></li>
+                        <li><a class="dropdown-item" href="#" data-status="Closed">Close Ticket</a></li>
+                        <li><a class="dropdown-item" href="#" data-status="Waiting">Waiting Ticket</a></li>
+                        <li><a class="dropdown-item" href="#" data-status="Rejected">Reject Ticket</a></li>
                     </ul>
                 </div>
             </div>
@@ -181,18 +197,15 @@ include 'configs/db_connection.php';
     <div class="offcanvas-body pt-0" style="overflow-y:auto;">
         <div class="d-flex align-items-center mb-3">
             <div class="rounded-circle bg-warning text-white d-flex justify-content-center align-items-center" style="width:40px;height:40px;font-weight:bold;font-size:1.2rem;">
-                SS
+                <span id="offcanvas-ticket-initials">SS</span>
             </div>
             <div class="ms-3">
-                <div><strong>Savithri Samaranayaka</strong> <span class="text-muted small">3d ago</span></div>
+                <div><strong id="offcanvas-ticket-creator"></strong></div>
             </div>
         </div>
         <div class="mb-4">
-            <p class="mb-1">Dear Mr.Padmal,</p>
-            <p class="mb-1">
-                Please change Mrs.M L N R Sewwandi's (KT2-1125P-5714F) Mobile number in system (Quotation).<br>
-                076 380 7042
-            </p>
+            <p class="mb-1" id="offcanvas-ticket-assignee"></p>
+            <p class="mb-1" id="offcanvas-ticket-description"></p>
             <p class="mb-0">Warm Regards,</p>
         </div>
         <div class="position-absolute bottom-0 start-0 w-100 px-4 pb-3" style="background: #fff;">
@@ -202,9 +215,86 @@ include 'configs/db_connection.php';
             </form>
         </div>
     </div>
-</div> -->
+</div>
 <script>
-    // document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
+    let currentTicketId = null;
+
+    // Set currentTicketId when a row is clicked
+    document.querySelectorAll('.ticket-row').forEach(function(row) {
+        row.addEventListener('click', function() {
+            currentTicketId = row.getAttribute('data-id');
+            document.getElementById('offcanvas-ticket-id').textContent = currentTicketId;
+            document.getElementById('offcanvas-ticket-summary').textContent = row.getAttribute('data-summary');
+            document.getElementById('offcanvas-ticket-creator').textContent = 'From: ' + row.getAttribute('data-creator');
+            var assignee = row.getAttribute('data-assignee');
+            document.getElementById('offcanvas-ticket-assignee').textContent = 'Dear ' + assignee;
+            document.getElementById('offcanvas-ticket-description').textContent = row.getAttribute('data-description');
+            // Optionally set initials
+            var creator = row.getAttribute('data-creator') || '';
+            var initials = creator.split(' ').map(w => w[0]).join('').toUpperCase();
+            document.getElementById('offcanvas-ticket-initials').textContent = initials || 'SS';
+
+            // Reset Accept button state every time a new row is clicked
+            var acceptBtn = document.getElementById('acceptBtn');
+            if (acceptBtn) {
+                acceptBtn.textContent = 'Accept';
+                acceptBtn.disabled = false;
+            }
+        });
+    });
+
+    // Accept button logic
+    var acceptBtn = document.getElementById('acceptBtn');
+    if (acceptBtn) {
+        acceptBtn.addEventListener('click', function() {
+            if (!currentTicketId) {
+                alert('Ticket ID is missing!');
+                return;
+            }
+            updateTicketStatus(currentTicketId, 'Accepted');
+        });
+    }
+
+    // Dropdown menu logic
+    document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(function(item) {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!currentTicketId) {
+                alert('Ticket ID is missing!');
+                return;
+            }
+            let status = item.getAttribute('data-status');
+            updateTicketStatus(currentTicketId, status);
+        });
+    });
+
+    function updateTicketStatus(ticketId, status) {
+        fetch('api/accept_ticket.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'tk_id=' + encodeURIComponent(ticketId) + '&status_name=' + encodeURIComponent(status)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Ticket status updated to ' + status + '!');
+                location.reload(); // Or update the table row dynamically
+            } else {
+                alert('Failed to update ticket status: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            alert('Error updating ticket status: ' + error);
+        });
+    }
+});
+</script>
+
+<script>
+    // document.addEventListener('DOMContentLoaded', function(){
     //     var assigneeBtn = document.getElementById('assigneeBtn');
     //     var successAlert = document.getElementById('successAlert');
     //     if (assigneeBtn) {
@@ -223,4 +313,5 @@ include 'configs/db_connection.php';
     // });
 </script>
 
-<!-- <?php //include 'components/tool_bar.php'; ?>  -->
+<!-- <?php //include 'components/tool_bar.php';  
+        ?>  -->

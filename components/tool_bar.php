@@ -4,10 +4,9 @@
             <option value="">Select Status</option>
             <option value="Open">Open</option>
             <option value="Waiting">Waiting</option>
+            <option value="Closed">Closed</option>
             <option value="Unassigned">Unassigned</option>
             <option value="My Tickets">My Tickets</option>
-            <option value="All">All</option>
-            <option value="Active Alerts">Active Alerts</option>
         </select>
     </div>
     <button class="btn btn-secondary" class="">Bulk Update</button>
