@@ -6,13 +6,14 @@ include 'configs/db_connection.php';
     Assignee updated to Maleesha Dewashan!
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
+<div id="custom-alert" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999; background:#f44336; color:#fff; padding:12px 24px; border-radius:5px; font-size:16px; box-shadow:0 2px 8px rgba(0,0,0,0.15);"></div>
 
 <div class="table-responsive">
     <table class="table table-hover align-middle">
         <thead class="table-light">
             <tr>
-                <th scope="col"><input type="checkbox"></th>
-                <th scope="col">ID <i class="fas fa-sort"></i></th>
+                <!-- <th scope="col"><input type="checkbox"></th> -->
+                <th scope="col">Ticket ID <i class="fas fa-sort"></i></th>
                 <th scope="col">Summary <i class="fas fa-sort"></i></th>
                 <th scope="col">Assignee <i class="fas fa-sort"></i></th>
                 <th scope="col">Creator <i class="fas fa-sort"></i></th>
@@ -21,7 +22,7 @@ include 'configs/db_connection.php';
                 <th scope="col">Category <i class="fas fa-sort"></i></th>
                 <th scope="col">Status <i class="fas fa-sort"></i></th>
                 <th scope="col">Created <i class="fas fa-sort"></i></th>
-                <th scope="col">Updated <i class="fas fa-sort"></i></th>
+                <th scope="col">Updated At <i class="fas fa-sort"></i></th>
                 <th scope="col">Due Date <i class="fas fa-sort"></i></th>
             </tr>
         </thead>
@@ -33,19 +34,31 @@ include 'configs/db_connection.php';
             $status_filter = $_GET['status'] ?? ''; // Get the selected status filter
             // Base SQL with JOINs to get names instead of IDs
             $sql = "SELECT 
-                        t.tk_id, t.tk_summary, t.tk_priority, t.tk_created_at, t.tk_updated_at, t.tk_due_date as due_date,
-                        t.tk_description,
-                        t.tk_creator as creator_name,
-                        assignee.ur_name as assignee_name,
-                        org.org_name,
-                        cat.cat_name,
-                        t.status_name
-                    FROM tb_ticket t
-                    LEFT JOIN tb_user creator ON t.tk_creator = creator.ur_email
-                    LEFT JOIN tb_user assignee ON t.tk_assignee = assignee.ur_id
-                    LEFT JOIN tb_organization org ON t.org_id = org.org_id
-                    LEFT JOIN tb_category cat ON t.cat_id = cat.cat_id
-                    LEFT JOIN tb_status st ON t.st_id = st.st_id";
+    t.tk_id, 
+    t.tk_summary, 
+    t.tk_priority, 
+    t.tk_created_at, 
+    t.tk_updated_at, 
+    t.tk_due_date as due_date,
+    t.tk_description,
+    t.tk_creator as creator_name,
+    assignee.ur_name as assignee_name,
+    org.org_name,
+    cat.cat_name,
+    t.status_name,
+    log.changed_at
+FROM tb_ticket t
+LEFT JOIN tb_user creator ON t.tk_creator = creator.ur_email
+LEFT JOIN tb_user assignee ON t.tk_assignee = assignee.ur_id
+LEFT JOIN tb_organization org ON t.org_id = org.org_id
+LEFT JOIN tb_category cat ON t.cat_id = cat.cat_id
+LEFT JOIN tb_status st ON t.st_id = st.st_id
+LEFT JOIN (
+    SELECT tk_id, MAX(changed_at) AS changed_at
+    FROM tb_ticket_log
+    GROUP BY tk_id
+) log ON t.tk_id = log.tk_id";
+
 
             $params = [];
             $types = '';
@@ -114,7 +127,7 @@ include 'configs/db_connection.php';
                     $category = isset($row['cat_name']) ? htmlspecialchars($row['cat_name']) : 'N/A';
                     $status = isset($row['status_name']) ? htmlspecialchars($row['status_name']) : 'N/A';
                     $created = date('M d, Y', strtotime($row['tk_created_at']));
-                    //$updated = isset($row['tk_updated_at']) ? date('M d, Y', strtotime($row['tk_updated_at'])) : '';
+                    $updated = isset($row['changed_at']) ? htmlspecialchars($row['changed_at']) : 'Not Updated';
                     //$due_date = isset($row['due_date']) && $row['due_date'] ? date('M d, Y', strtotime($row['due_date'])) : '';
 
                     // Priority badge color
@@ -138,7 +151,7 @@ include 'configs/db_connection.php';
                             data-created='{$created}'
                             data-description='" . htmlspecialchars($row['tk_description']) . "'
                         >";
-                    echo "<td><input type='checkbox'></td>";
+                    // echo "<td><input type='checkbox'></td>";
                     echo "<td><a href='#' class='text-decoration-none'>{$id}</a></td>";
                     echo "<td><a href='#' class='text-decoration-none'>{$summary}</a></td>";
                     echo "<td><a href='#' class='text-decoration-none'>{$assignee}</a></td>";
@@ -150,7 +163,7 @@ include 'configs/db_connection.php';
                     echo "<td><a href='#' class='text-decoration-none'>{$category}</a></td>";
                     echo "<td><a href='#' class='text-decoration-none'>{$status}</a></td>";
                     echo "<td><a href='#' class='text-decoration-none'>{$created}</a></td>";
-                    //    echo "<td><a href='#' class='text-decoration-none'>{$updated}</a></td>";
+                    echo "<td><a href='#' class='text-decoration-none'>{$updated}</a></td>";
                     //    echo "<td><a href='#' class='text-decoration-none'>{$due_date}</a></td>";
                     echo "</tr>";
                 }
@@ -189,6 +202,7 @@ include 'configs/db_connection.php';
                         <li><a class="dropdown-item" href="#" data-status="Closed">Close Ticket</a></li>
                         <li><a class="dropdown-item" href="#" data-status="Waiting">Waiting Ticket</a></li>
                         <li><a class="dropdown-item" href="#" data-status="Rejected">Reject Ticket</a></li>
+                        <li><a class="dropdown-item" href="#" data-status="Delete">Delete Ticket</a></li>
                     </ul>
                 </div>
             </div>
@@ -216,82 +230,7 @@ include 'configs/db_connection.php';
         </div>
     </div>
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    let currentTicketId = null;
-
-    // Set currentTicketId when a row is clicked
-    document.querySelectorAll('.ticket-row').forEach(function(row) {
-        row.addEventListener('click', function() {
-            currentTicketId = row.getAttribute('data-id');
-            document.getElementById('offcanvas-ticket-id').textContent = currentTicketId;
-            document.getElementById('offcanvas-ticket-summary').textContent = row.getAttribute('data-summary');
-            document.getElementById('offcanvas-ticket-creator').textContent = 'From: ' + row.getAttribute('data-creator');
-            var assignee = row.getAttribute('data-assignee');
-            document.getElementById('offcanvas-ticket-assignee').textContent = 'Dear ' + assignee;
-            document.getElementById('offcanvas-ticket-description').textContent = row.getAttribute('data-description');
-            // Optionally set initials
-            var creator = row.getAttribute('data-creator') || '';
-            var initials = creator.split(' ').map(w => w[0]).join('').toUpperCase();
-            document.getElementById('offcanvas-ticket-initials').textContent = initials || 'SS';
-
-            // Reset Accept button state every time a new row is clicked
-            var acceptBtn = document.getElementById('acceptBtn');
-            if (acceptBtn) {
-                acceptBtn.textContent = 'Accept';
-                acceptBtn.disabled = false;
-            }
-        });
-    });
-
-    // Accept button logic
-    var acceptBtn = document.getElementById('acceptBtn');
-    if (acceptBtn) {
-        acceptBtn.addEventListener('click', function() {
-            if (!currentTicketId) {
-                alert('Ticket ID is missing!');
-                return;
-            }
-            updateTicketStatus(currentTicketId, 'Accepted');
-        });
-    }
-
-    // Dropdown menu logic
-    document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(function(item) {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (!currentTicketId) {
-                alert('Ticket ID is missing!');
-                return;
-            }
-            let status = item.getAttribute('data-status');
-            updateTicketStatus(currentTicketId, status);
-        });
-    });
-
-    function updateTicketStatus(ticketId, status) {
-        fetch('api/accept_ticket.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: 'tk_id=' + encodeURIComponent(ticketId) + '&status_name=' + encodeURIComponent(status)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Ticket status updated to ' + status + '!');
-                location.reload(); // Or update the table row dynamically
-            } else {
-                alert('Failed to update ticket status: ' + (data.error || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            alert('Error updating ticket status: ' + error);
-        });
-    }
-});
-</script>
+<script src="js/table_off_canvas.js"></script>
 
 <script>
     // document.addEventListener('DOMContentLoaded', function(){
