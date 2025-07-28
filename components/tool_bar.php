@@ -3,6 +3,7 @@
         <select class="form-select">
             <option value="">Select Status</option>
             <option value="Open">Open</option>
+            <option value="Accepted">Accepted</option>
             <option value="Waiting">Waiting</option>
             <option value="Closed">Closed</option>
             <option value="Unassigned">Unassigned</option>

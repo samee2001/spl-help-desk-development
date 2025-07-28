@@ -31,7 +31,7 @@
                         <li>
                             <hr class="dropdown-divider my-2">
                         </li>
-                        <li><a class="dropdown-item text-danger py-2 px-3 fs-6" href="logout.php">Log Out</a></li>
+                        <li><a class="dropdown-itemm text-danger py-2 px-3 fs-6" href="logout.php" style="text-decoration: none;">Log Out</a></li>
                     </ul>
                 </div>
 

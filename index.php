@@ -139,7 +139,7 @@ if (!isset($_SESSION['user_email'])) {
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="organization">Organization:</label>
-                            <select class="form-select" id="organization" name="organization">
+                            <select class="form-select" id="organization" name="organization" required>
                                 <option value="">Select organization</option>
                                 <?php
                                 $result = mysqli_query($conn, "SELECT org_name, org_id FROM tb_organization");
@@ -153,7 +153,7 @@ if (!isset($_SESSION['user_email'])) {
                         </div>
                         <div class="mb-3">
                             <label for="contact">Contact:</label>
-                            <select class="form-select" id="contact" name="contact">
+                            <select class="form-select" id="contact" name="contact" required>
                                 <option value="">Select contact</option>
                                 <?php
                                 $result = mysqli_query($conn, "SELECT ur_name, ur_id FROM tb_user");
@@ -167,15 +167,15 @@ if (!isset($_SESSION['user_email'])) {
                         </div>
                         <div class="mb-3">
                             <label for="description">Description:</label>
-                            <textarea id="description" name="description" class="form-control" rows="3"></textarea>
+                            <textarea id="description" name="description" class="form-control" rows="3" required></textarea>
                         </div>
                         <div class="mb-3">
                             <label for="summary">Summary:</label>
-                            <textarea id="summary" name="summary" class="form-control" rows="3"></textarea>
+                            <textarea id="summary" name="summary" class="form-control" rows="3" required></textarea>
                         </div>
                         <div class="mb-3">
                             <label for="assignee">Assignee:</label>
-                            <select class="form-select" id="assignee" name="assignee">
+                            <select class="form-select" id="assignee" name="assignee" required>
                                 <option value="">Select assignee</option>
                                 <?php
                                 $result = mysqli_query($conn, "SELECT ur_name, ur_id, ur_email FROM tb_user");
@@ -189,7 +189,7 @@ if (!isset($_SESSION['user_email'])) {
                         </div>
                         <div class="mb-3">
                             <label for="priority">Priority:</label>
-                            <select class="form-select" id="priority" name="priority">
+                            <select class="form-select" id="priority" name="priority" required>
                                 <option value="low">Low</option>
                                 <option value="medium">Medium</option>
                                 <option value="high">High</option>
@@ -197,7 +197,7 @@ if (!isset($_SESSION['user_email'])) {
                         </div>
                         <div class="mb-3">
                             <label for="category">Category:</label>
-                            <select class="form-select" id="category" name="category">
+                            <select class="form-select" id="category" name="category" required>
                                 <option value="">Select category</option>
                                 <?php
                                 $result = mysqli_query($conn, "SELECT cat_name, cat_id FROM tb_category");
@@ -247,55 +247,85 @@ if (!isset($_SESSION['user_email'])) {
             submitBtn.disabled = true;
 
             fetch(form.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Find the alert placeholder
-                var alertPlaceholder = document.querySelector('.alert-danger');
-                if (!alertPlaceholder) {
-                    // If no alert is visible, create one
-                    alertPlaceholder = document.createElement('div');
-                    alertPlaceholder.className = 'alert alert-dismissible fade show position-absolute top-0 start-50 translate-middle-x mt-3 shadow';
-                    alertPlaceholder.style.zIndex = '1050';
-                    alertPlaceholder.style.minWidth = '300px';
-                    alertPlaceholder.style.maxWidth = '500px';
-                    alertPlaceholder.setAttribute('role', 'alert');
-                    
-                    // Find a container to append the new alert to
-                    var container = document.querySelector('.container-fluid.p-0');
-                    if(container) {
-                        container.insertBefore(alertPlaceholder, container.firstChild);
-                    }
-                }
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Find the alert placeholder
+                    var alertPlaceholder = document.querySelector('.alert-danger');
+                    if (!alertPlaceholder) {
+                        // If no alert is visible, create one
+                        alertPlaceholder = document.createElement('div');
+                        alertPlaceholder.className = 'alert alert-dismissible fade show position-absolute top-0 start-50 translate-middle-x mt-3 shadow';
+                        alertPlaceholder.style.zIndex = '1050';
+                        alertPlaceholder.style.minWidth = '300px';
+                        alertPlaceholder.style.maxWidth = '500px';
+                        alertPlaceholder.setAttribute('role', 'alert');
 
-                // Update alert content and class
-                alertPlaceholder.innerHTML = data.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-                
-                if (data.success) {
-                    alertPlaceholder.classList.remove('alert-danger');
-                    alertPlaceholder.classList.add('alert-success');
-                    form.reset(); // Clear the form on success
-                    var modal = bootstrap.Modal.getInstance(document.getElementById('newTicketModal'));
-                    modal.hide();
-                } else {
-                    alertPlaceholder.classList.remove('alert-success');
-                    alertPlaceholder.classList.add('alert-danger');
-                }
-                // Hide spinner and enable button
-                spinner.classList.add('d-none');
-                btnText.textContent = 'Submit';
-                submitBtn.disabled = false;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // You can also show an error message to the user here
-                // Hide spinner and enable button
-                spinner.classList.add('d-none');
-                btnText.textContent = 'Submit';
-                submitBtn.disabled = false;
-            });
+                        // Find a container to append the new alert to
+                        var container = document.querySelector('.container-fluid.p-0');
+                        if (container) {
+                            container.insertBefore(alertPlaceholder, container.firstChild);
+                        }
+                    }
+
+                    // Update alert content and class
+                    alertPlaceholder.innerHTML = data.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+
+                    if (data.success) {
+                        alertPlaceholder.classList.remove('alert-danger');
+                        alertPlaceholder.classList.add('alert-success');
+                        form.reset(); // Clear the form on success
+                        var modal = bootstrap.Modal.getInstance(document.getElementById('newTicketModal'));
+                        modal.hide();
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1500); // 1.5 seconds delay before reload
+                    } else {
+                        alertPlaceholder.classList.remove('alert-success');
+                        alertPlaceholder.classList.add('alert-danger');
+                    }
+                    // Hide spinner and enable button
+                    spinner.classList.add('d-none');
+                    btnText.textContent = 'Submit';
+                    submitBtn.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // You can also show an error message to the user here
+                    // Hide spinner and enable button
+                    spinner.classList.add('d-none');
+                    btnText.textContent = 'Submit';
+                    submitBtn.disabled = false;
+                });
+        });
+    </script>
+    <!-- Modal for displaying messages -->
+    <div class="modal fade" id="popupMessage" tabindex="-1" aria-labelledby="popupMessageLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="popupMessageLabel">Notification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Ticket Updated Successfully....
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="popupCloseBtn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var closeBtn = document.getElementById("popupCloseBtn");
+            if (closeBtn) {
+                closeBtn.addEventListener("click", function() {
+                    location.reload();
+                });
+            }
         });
     </script>
 </body>

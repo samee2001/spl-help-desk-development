@@ -28,11 +28,14 @@ function sendEmail($toEmail, $subject, $body) {
         $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);  // Sender's email and name
         $mail->addAddress($toEmail);  // Add recipient's email
 
+
+        // Embed the image
+        // $mail->addEmbeddedImage('../assets/sadaharitha_email.jpg', 'featureimg');
         // Content
         $mail->isHTML(true);  // Send HTML email
         $mail->Subject = $subject;  // Subject of the email
         $mail->Body = $body;  // Body content of the email
-
+        $mail->addEmbeddedImage('../assets/sadaharitha_email.jpg','sadaharitha_logo');
         // Send the email
         $mail->send();
         return true;  // Email sent successfully
