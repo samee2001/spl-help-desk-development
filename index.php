@@ -178,10 +178,10 @@ if (!isset($_SESSION['user_email'])) {
                             <select class="form-select" id="assignee" name="assignee" required>
                                 <option value="">Select assignee</option>
                                 <?php
-                                $result = mysqli_query($conn, "SELECT ur_name, ur_id, ur_email FROM tb_user");
+                                $result = mysqli_query($conn, "SELECT emp_name, emp_id, emp_email FROM tb_employee");
                                 if ($result) {
                                     while ($row = mysqli_fetch_assoc($result)) {
-                                        echo '<option value="' . htmlspecialchars($row['ur_id']) . '">' . htmlspecialchars($row['ur_email']) . '</option>';
+                                        echo '<option value="' . htmlspecialchars($row['emp_id']) . '">' . htmlspecialchars($row['emp_email']) . '</option>';
                                     }
                                 }
                                 ?>

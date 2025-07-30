@@ -12,7 +12,9 @@
     </div>
     <div class="links">
         <a href="#">Forgot Password</a>
-        <a href="#">Signup</a>
+        <!-- <a href="register.php">Register</a> -->
     </div>
     <input type="submit" id="submit" value="Login">
+    <p style="color: white; margin-top: 20px;">Don't Have have an account? <a href="register.php" style="text-decoration: none; color: #6666ff">Register</a></p>
+
 </form>

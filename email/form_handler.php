@@ -23,12 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $category = $_POST['category'] ?? '';
     $creator = $_SESSION['user_email'];
 
-    //insert the ticket     🤨😁😁😀😀
+    //insert the ticket    
     date_default_timezone_set('Asia/Colombo');
     $created_at = date('F j, Y h:i A');
 
     // Validate required fields
-    if (!$organization || !$contact || !$summary || !$category) {
+    if (!$organization || !$contact || !$summary || !$category || !$assignee) {
         $errors[] = "Please fill in all required fields.";
     }
 
@@ -76,11 +76,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Get the assignee's email from the database
             $assigneeEmail = '';
-            $result = mysqli_query($conn, "SELECT ur_email FROM tb_user WHERE ur_id = '$assignee'");
+            $result = mysqli_query($conn, "SELECT emp_email FROM tb_employee WHERE emp_id = '$assignee'");
             if ($row = mysqli_fetch_assoc($result)) {
-                $assigneeEmail = $row['ur_email'];
+                $assigneeEmail = $row['emp_email'];
             }
-
+                   
             // Fetch org_name, cat_name, and ur_name for email
             $org_name = $cat_name = $contact_name = '';
             // Organization name
@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             // Fetch assignee name
             $assignee_name = '';
-            $stmt_assignee = $conn->prepare("SELECT ur_name FROM tb_user WHERE ur_id = ?");
+            $stmt_assignee = $conn->prepare("SELECT emp_name FROM tb_employee WHERE emp_id = ?");
             $stmt_assignee->bind_param("i", $assignee);
             $stmt_assignee->execute();
             $stmt_assignee->bind_result($assignee_name);

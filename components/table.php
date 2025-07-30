@@ -33,18 +33,6 @@ include 'configs/db_connection.php';
             $search_query = $_GET['search'] ?? '';
             $status_filter = $_GET['status'] ?? ''; // Get the selected status filter
             // Base SQL with JOINs to get names instead of IDs
-
-
-            // Path to the .sql file
-            // $sqlFilePath = '/path/to/your/file.sql';
-
-            // // Read the file contents into a PHP variable
-            // $sql = file_get_contents($sqlFilePath);
-
-            // // Check if the file was read successfully
-            // if ($sqlContent === false) {
-            //     die("Error reading the SQL file.");
-            // }
             $sql = "SELECT 
                 t.tk_id, 
                 t.tk_summary, 
@@ -54,14 +42,14 @@ include 'configs/db_connection.php';
                 t.tk_due_date as due_date,
                 t.tk_description,
                 t.tk_creator as creator_name,
-                assignee.ur_name as assignee_name,
+                assignee.emp_name as assignee_name,
                 org.org_name,
                 cat.cat_name,
                 t.status_name,
                 log.changed_at
             FROM tb_ticket t
             LEFT JOIN tb_user creator ON t.tk_creator = creator.ur_email
-            LEFT JOIN tb_user assignee ON t.tk_assignee = assignee.ur_id
+            LEFT JOIN tb_employee assignee ON t.tk_assignee = assignee.emp_id
             LEFT JOIN tb_organization org ON t.org_id = org.org_id
             LEFT JOIN tb_category cat ON t.cat_id = cat.cat_id
             LEFT JOIN tb_status st ON t.st_id = st.st_id
@@ -81,7 +69,7 @@ include 'configs/db_connection.php';
                           OR t.tk_description LIKE ? 
                           OR t.tk_id LIKE ? 
                           OR t.tk_creator LIKE ? 
-                          OR assignee.ur_name LIKE ? 
+                          OR assignee.emp_name LIKE ? 
                           OR org.org_name LIKE ? 
                           OR t.tk_priority LIKE ?
                           OR cat.cat_name LIKE ?
