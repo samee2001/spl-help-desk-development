@@ -203,3 +203,7 @@ body{
 #submit:active{
     opacity: 0.8;
 }
+#submit:hover {
+    background-color: blue; /* Blue on hover for submit button */
+    color: white; /* White text color when hovering */
+  }

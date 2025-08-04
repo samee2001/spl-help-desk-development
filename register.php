@@ -46,7 +46,7 @@ if (isset($_POST['register_btn'])) {
 
     //If email already exists, show an error
     if ($result->num_rows > 0) {
-        $_SESSION['error'] = "The email address is already registered.";
+        $_SESSION['error'] = "The email address is already registered. So, Login";
         header("Location: register.php"); // Redirect back to the registration page
         exit();
     }
@@ -62,7 +62,7 @@ if (isset($_POST['register_btn'])) {
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     // Insert the new user into the database
-    $insert_query = "INSERT INTO tb_user (ur_name, ur_email, ur_password, employee_id) VALUES (?, ?, ?,?)";
+    $insert_query = "INSERT INTO tb_user (ur_name, ur_email, ur_password, emp_id) VALUES (?, ?, ?,?)";
     $insert_stmt = $conn->prepare($insert_query);
     $insert_stmt->bind_param("sssi", $name, $email, $hashed_password, $employee_id);
 
