@@ -11,7 +11,7 @@
         <i></i>
     </div>
     <div class="links">
-        <a href="#">Forgot Password</a>
+        <a href="forgot_password.php">Forgot Password</a>
         <!-- <a href="register.php">Register</a> -->
     </div>
     <input type="submit" id="submit" value="Login">
