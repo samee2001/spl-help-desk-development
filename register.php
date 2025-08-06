@@ -12,7 +12,7 @@ if (isset($_POST['register_btn'])) {
     $confirm_password = $_POST['reg_confirm_password'];
 
     // Check if the email is in the required format (xxx@sadaharitha.com)
-    if (!preg_match('/^[a-zA-Z0-9._%+-]+@sadaharitha\.com$/', $email)) {
+    if (!preg_match('/^[a-zA-Z0-9._%+-]+@gmail\.com$/', $email)) {
         $_SESSION['error'] = "Invalid email format. Please use a valid email like xxx@sadaharitha.com.";
         header("Location: register.php"); // Redirect back to the registration page
         exit();
@@ -45,7 +45,7 @@ if (isset($_POST['register_btn'])) {
 
 
     //If email already exists, show an error
-    if ($result->num_rows > 0) {
+    if ($result_user->num_rows > 0) {
         $_SESSION['error'] = "The email address is already registered. So, Login";
         header("Location: register.php"); // Redirect back to the registration page
         exit();

@@ -15,6 +15,6 @@
         <!-- <a href="register.php">Register</a> -->
     </div>
     <input type="submit" id="submit" value="Login">
-    <p style="color: white; margin-top: 20px;">Don't Have have an account? <a href="register.php" style="text-decoration: none; color: #6666ff">Register</a></p>
+    <p style="color: white; margin-top: 20px;">Don't have an account? <a href="register.php" style="text-decoration: none; color: #6666ff">Register</a></p>
 
 </form>

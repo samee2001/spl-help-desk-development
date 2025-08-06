@@ -19,7 +19,7 @@ body {
 .box {
   width: 500px;
   
-  height: 450px;
+  height: 350px;
   background: #23242a;
   border-radius: 10px;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -48,10 +48,9 @@ body {
 .inputBox {
   width: 100%;
   position: relative;
-  padding-bottom: 10px;
 }
 
-.inputBox input[type="email"] {
+.inputBox input[type="number"] {
   width: 100%;
   padding: 14px 12px 14px 12px;
   background: #2c2f36;
@@ -88,7 +87,7 @@ body {
 } */
 
 
-.inputBox input[type="password"] {
+.inputBox input[type="number"] {
   width: 100%;
   padding: 14px 12px 14px 12px;
   background: #2c2f36;

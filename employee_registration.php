@@ -95,15 +95,16 @@ if (isset($_POST['register_employees'])) {
         <?php
 
         if (isset($_SESSION['error'])) {
-            echo '<div class="alert alert-danger alert-dismissible fade show" role="alert" style="position: absolute; top: 95px; z-index: 3; width: 30%; text-align: center; margin-bottom: 10px;">
+            echo '<div class="alert alert-danger alert-dismissible fade show" role="alert" style="position: absolute; top: 95px; z-index: 3; width: 30%; text-align: center; margin-bottom: 10px; left: 50%; transform: translateX(-50%);">
             ' . htmlspecialchars($_SESSION['error']) . '
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>';
+
             unset($_SESSION['error']);
         }
 
         if (isset($_SESSION['success'])) {
-            echo '<div class="alert alert-success alert-dismissible fade show" role="alert" style="position: absolute; top: 95px; z-index: 3; width: 30%; text-align: center;">
+            echo '<div class="alert alert-success alert-dismissible fade show" role="alert" style="position: absolute; top: 95px; z-index: 3; width: 30%; text-align: center; margin-bottom: 10px; left: 50%; transform: translateX(-50%);">
             ' . htmlspecialchars($_SESSION['success']) . '
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>';
