@@ -8,66 +8,6 @@ if (!isset($_SESSION['user_email'])) {
     exit();
 }
 
-// $errors = [];
-// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-//     $organization = $_POST['organization'] ?? '';
-//     $description = $_POST['description'] ?? '';
-//     $contact = $_POST['contact'] ?? '';
-//     $summary = $_POST['summary'] ?? '';
-//     $assignee = $_POST['assignee'] ?? '';
-//     $priority = $_POST['priority'] ?? '';
-//     $category = $_POST['category'] ?? '';
-//     $creator = $_SESSION['user_email'];
-
-//     date_default_timezone_set('Asia/Colombo');
-//     $created_at = date('F j, Y h:i A');
-
-//     // Validate required fields
-//     if (!$organization || !$contact || !$summary || !$category) {
-//         $errors[] = "Please fill in all required fields.";
-//     }
-
-//     // Handle file uploads
-//     $uploaded_files = [];
-//     if (!empty($_FILES['attachments']['name'][0])) {
-//         $allowed_types = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png', 'image/gif'];
-//         $upload_dir = 'uploads/';
-//         if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-
-//         foreach ($_FILES['attachments']['tmp_name'] as $key => $tmp_name) {
-//             $file_name = basename($_FILES['attachments']['name'][$key]);
-//             $file_type = $_FILES['attachments']['type'][$key];
-//             $file_tmp = $_FILES['attachments']['tmp_name'][$key];
-
-//             if (!in_array($file_type, $allowed_types)) {
-//                 $errors[] = "$file_name is not an allowed file type.";
-//                 continue;
-//             }
-
-//             $target_path = $upload_dir . uniqid() . '_' . $file_name;
-//             if (move_uploaded_file($file_tmp, $target_path)) {
-//                 $uploaded_files[] = $target_path;
-//             } else {
-//                 $errors[] = "Failed to upload $file_name.";
-//             }
-//         }
-//     }
-
-//     // If no errors, insert into database
-//     if (empty($errors)) {
-//         $attachments = implode(',', $uploaded_files); // Store as comma-separated paths
-//         $stmt = $conn->prepare("INSERT INTO tb_ticket (tk_summary, tk_description, tk_assignee,tk_creator,tk_priority, tk_created_at, org_id, ur_id,  cat_id) VALUES (?, ?, ?, ?,  ?, ?, ?,?,?)");
-//         $stmt->bind_param("ssssssiii", $summary, $description, $assignee, $creator, $priority, $created_at, $organization, $contact,  $category);
-
-//         if ($stmt->execute()) {
-//             // Redirect or show success
-//             header("Location: index.php");
-//             exit;
-//         } else {
-//             $errors[] = "Database error: " . $conn->error;
-//         }
-//     }
-// }
 ?>
 <!DOCTYPE html>
 <html lang="en">

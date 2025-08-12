@@ -13,12 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirmNewPassword = $_POST['forgot_confirm_password'] ?? '';
     $email = $_SESSION['reset_email'] ?? '';
 
-    // Validate that both passwords are provided
-    if (empty($newPassword) || empty($confirmNewPassword)) {
-        $_SESSION['error'] = "Both password fields are required.";
-        header("Location: change_password.php");
-        exit();
-    }
     // Check if passwords match
     if ($confirmNewPassword !== $newPassword) {
         $_SESSION['error'] = "Passwords do not match. Please try again.";

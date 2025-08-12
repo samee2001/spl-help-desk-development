@@ -7,10 +7,9 @@
             <option value="Waiting">Waiting</option>
             <option value="Closed">Closed</option>
             <option value="Unassigned">Unassigned</option>
-            <option value="My Tickets">My Tickets</option>
         </select>
     </div>
-    <button class="btn btn-secondary" class="">Bulk Update</button>
+    <button class="btn btn-secondary" ><a href="employee_registration.php" style="text-decoration: none; color: white; ">Add Employee</a></button>
     <form action="index.php" method="GET" class="input-group w-auto">
         <input type="text" name="search" class="form-control" placeholder="Search..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
         <button class="btn btn-outline-secondary" type="submit">

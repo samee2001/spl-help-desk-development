@@ -1,12 +1,30 @@
 <?php
 include 'configs/db_connection.php';
+
+// Get the logged-in user's employee ID
+$user_email = $_SESSION['user_email'] ?? '';
+$user_emp_id = null;
+
+if (!empty($user_email)) {
+    // Get the employee ID for the logged-in user
+    $user_stmt = $conn->prepare("SELECT emp_id FROM tb_user WHERE ur_email = ?");
+    $user_stmt->bind_param("s", $user_email);
+    $user_stmt->execute();
+    $user_result = $user_stmt->get_result();
+
+    if ($user_result->num_rows > 0) {
+        $user_row = $user_result->fetch_assoc();
+        $user_emp_id = $user_row['emp_id'];
+    }
+    $user_stmt->close();
+}
 ?>
 <!-- Success Alert (hidden by default) -->
-<div id="successAlert" class="alert alert-success alert-dismissible fade show d-none" role="alert">
+<!-- <div id="successAlert" class="alert alert-success alert-dismissible fade show d-none" role="alert">
     Assignee updated to Maleesha Dewashan!
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-<div id="custom-alert" style="display:none; position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:9999; background:#f44336; color:#fff; padding:12px 24px; border-radius:5px; font-size:16px; box-shadow:0 2px 8px rgba(0,0,0,0.15);"></div>
+<div id="custom-alert" style="display:none; position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:9999; background:#f44336; color:#fff; padding:12px 24px; border-radius:5px; font-size:16px; box-shadow:0 2px 8px rgba(0,0,0,0.15);"></div> -->
 
 <div class="table-responsive">
     <table class="table table-hover align-middle">
@@ -63,9 +81,16 @@ include 'configs/db_connection.php';
             $params = [];
             $types = '';
 
+            // Filter tickets by assigned user (if user is logged in)
+            if (!empty($user_emp_id)) {
+                $sql .= " WHERE t.tk_assignee = ?";
+                $params[] = $user_emp_id;
+                $types = 'i';
+            }
+
             if (!empty($search_query)) {
                 // You can add more fields to search in
-                $sql .= " WHERE t.tk_summary LIKE ? 
+                $sql .= (empty($user_emp_id) ? " WHERE" : " AND") . " (t.tk_summary LIKE ? 
                           OR t.tk_description LIKE ? 
                           OR t.tk_id LIKE ? 
                           OR t.tk_creator LIKE ? 
@@ -73,15 +98,16 @@ include 'configs/db_connection.php';
                           OR org.org_name LIKE ? 
                           OR t.tk_priority LIKE ?
                           OR cat.cat_name LIKE ?
-                          OR t.status_name LIKE ?";
+                          OR t.status_name LIKE ?)";
                 $search_param = "%{$search_query}%";
-                $params = array_fill(0, 9, $search_param); // We have 9 placeholders
-                $types = str_repeat('s', 9);
+                $search_params = array_fill(0, 9, $search_param); // We have 9 placeholders
+                $params = array_merge($params, $search_params);
+                $types .= str_repeat('s', 9);
             }
 
             // Apply status filter if selected
             if (!empty($status_filter)) {
-                $sql .= (empty($search_query) ? " WHERE" : " AND") . " t.status_name = ?";
+                $sql .= (empty($user_emp_id) && empty($search_query) ? " WHERE" : " AND") . " t.status_name = ?";
                 $params[] = $status_filter;
                 $types .= 's';
             }
@@ -107,9 +133,26 @@ include 'configs/db_connection.php';
                 $result = $conn->query($sql);
             }
 
-            // Count total records (for pagination display)
-            $count_sql = "SELECT COUNT(*) FROM tb_ticket";
-            $count_result = $conn->query($count_sql);
+            // Count total records (for pagination display) - filtered by user's assigned tickets
+            $count_sql = "SELECT COUNT(*) FROM tb_ticket t";
+            $count_params = [];
+            $count_types = '';
+
+            if (!empty($user_emp_id)) {
+                $count_sql .= " WHERE t.tk_assignee = ?";
+                $count_params[] = $user_emp_id;
+                $count_types = 'i';
+            }
+
+            if (!empty($count_params)) {
+                $count_stmt = $conn->prepare($count_sql);
+                $count_stmt->bind_param($count_types, ...$count_params);
+                $count_stmt->execute();
+                $count_result = $count_stmt->get_result();
+            } else {
+                $count_result = $conn->query($count_sql);
+            }
+
             $total_records = $count_result->fetch_row()[0];
             $total_pages = ceil($total_records / $records_per_page);
 
@@ -251,6 +294,3 @@ include 'configs/db_connection.php';
     //     }
     // });
 </script>
-
-<!-- <?php //include 'components/tool_bar.php';  
-        ?>  -->
