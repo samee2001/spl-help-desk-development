@@ -9,7 +9,7 @@
             <option value="Unassigned">Unassigned</option>
         </select>
     </div>
-    <button class="btn btn-secondary" ><a href="employee_registration.php" style="text-decoration: none; color: white; ">Add Employee</a></button>
+    <button class="btn btn-secondary" ><a href="employee_registration.php" style="text-decoration: none; color: white; pointer-events:none">Add Employee</a></button>
     <form action="index.php" method="GET" class="input-group w-auto">
         <input type="text" name="search" class="form-control" placeholder="Search..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
         <button class="btn btn-outline-secondary" type="submit">

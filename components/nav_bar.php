@@ -23,7 +23,8 @@
                         <i class="fas fa-user-circle fs-5 me-1"></i> </button>
 
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm border rounded">
-                        <li><a class="dropdown-item py-2 px-3 fs-6" href="#">My Profile</a></li>
+                        <li><a class="dropdown-item py-2 px-3 fs-6" href="#"><?php echo htmlspecialchars($_SESSION['user_email']); ?></a></li>
+                        <br>
                         <li><a class="dropdown-item py-2 px-3 fs-6" href="#">Account Settings</a></li>
                         <li><a class="dropdown-item py-2 px-3 fs-6" href="#">Help</a></li>
                         <li><a class="dropdown-item py-2 px-3 fs-6" href="#">Guidelines</a></li>
