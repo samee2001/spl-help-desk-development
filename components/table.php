@@ -265,14 +265,24 @@ if (!empty($user_email)) {
             <p class="mb-1" id="offcanvas-ticket-description"></p>
             <p class="mb-0">Warm Regards,</p>
         </div>
+        
+        <!-- Conversation History -->
+        <div class="conversation-area mb-4" style="max-height: 200px; overflow-y: auto;">
+            <h6 class="text-muted mb-3">Conversation History</h6>
+            <div id="conversation-messages">
+                <!-- Messages will be loaded here -->
+            </div>
+        </div>
+        
         <div class="position-absolute bottom-0 start-0 w-100 px-4 pb-3" style="background: #fff;">
-            <form class="d-flex align-items-center">
-                <input type="text" class="form-control me-2" placeholder="Type a public response...">
+            <form id="messageForm" class="d-flex align-items-center">
+                <input type="text" class="form-control me-2" id="messageInput" placeholder="Type a message..." required>
                 <button type="submit" class="btn btn-primary">Send</button>
             </form>
         </div>
     </div>
 </div>
+<link rel="stylesheet" href="css/conversation.css">
 <script src="js/table_off_canvas.js"></script>
 
 <script>

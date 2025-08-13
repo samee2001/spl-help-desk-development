@@ -32,6 +32,89 @@ document.addEventListener("DOMContentLoaded", function () {
         acceptBtn.textContent = "Accept";
         acceptBtn.disabled = false;
       }
+      
+      // Load conversation history for this ticket
+      loadConversationHistory(currentTicketId);
+    });
+  });
+
+  // Function to load conversation history
+  function loadConversationHistory(ticketId) {
+    fetch(`api/email_conversation.php?ticket_id=${encodeURIComponent(ticketId)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          displayConversation(data.conversation);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading conversation:', error);
+      });
+  }
+
+  // Function to display conversation messages
+  function displayConversation(conversation) {
+    const messagesContainer = document.getElementById('conversation-messages');
+    if (!messagesContainer) return;
+
+    if (conversation.length === 0) {
+      messagesContainer.innerHTML = '<p class="text-muted text-center">No messages yet. Start the conversation!</p>';
+      return;
+    }
+
+    let messagesHTML = '';
+    conversation.forEach(msg => {
+      const messageClass = msg.is_creator ? 'text-end' : 'text-start';
+      const bubbleClass = msg.is_creator ? 'bg-primary text-white' : 'bg-light';
+      const time = new Date(msg.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      messagesHTML += `
+        <div class="mb-2 ${messageClass}">
+          <div class="d-inline-block p-2 rounded ${bubbleClass}" style="max-width: 80%;">
+            <div class="small">${msg.message}</div>
+            <div class="small ${msg.is_creator ? 'text-white-50' : 'text-muted'}">${time}</div>
+          </div>
+        </div>
+      `;
+    });
+
+    messagesContainer.innerHTML = messagesHTML;
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Handle message form submission
+  document.getElementById('messageForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput.value.trim();
+    
+    if (!message || !currentTicketId) return;
+    
+    // Send message
+    fetch('api/email_conversation.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ticket_id: currentTicketId,
+        message: message
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        messageInput.value = '';
+        // Reload conversation to show new message
+        loadConversationHistory(currentTicketId);
+      } else {
+        alert('Failed to send message: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(error => {
+      console.error('Error sending message:', error);
+      alert('Error sending message. Please try again.');
     });
   });
 
