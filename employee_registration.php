@@ -13,7 +13,7 @@ if (isset($_POST['register_employees'])) {
     $emp_organization = $_POST['reg_emp_org'];
 
     // Check if the email is in the required format (xxx@sadaharitha.com)
-    if (!preg_match('/^[a-zA-Z0-9._%+-]+@sadaharitha\.com$/', $emp_email)) {
+    if (!preg_match('/^[a-zA-Z0-9._%+-]+@gmail\.com$/', $emp_email)) {
         $_SESSION['error'] = "Please use a valid email like xxx@sadaharitha.com.";
         header("Location: employee_registration.php"); // Redirect back to the registration page
         exit();

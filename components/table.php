@@ -112,16 +112,7 @@ if (!empty($user_email)) {
                 $types .= 's';
             }
 
-            $types .= 'ii';
-            $sql .= " ORDER BY t.tk_id DESC LIMIT ?, ?";
-
-            // Pagination logic
-            $current_page = $_GET['page'] ?? 1;
-            $records_per_page = 20;
-            $start_record = ($current_page - 1) * $records_per_page;
-
-            $params[] = $start_record;
-            $params[] = $records_per_page;
+            $sql .= " ORDER BY t.tk_id DESC";
 
             // Fetch all tickets
             if (!empty($params)) {
@@ -133,28 +124,7 @@ if (!empty($user_email)) {
                 $result = $conn->query($sql);
             }
 
-            // Count total records (for pagination display) - filtered by user's assigned tickets
-            $count_sql = "SELECT COUNT(*) FROM tb_ticket t";
-            $count_params = [];
-            $count_types = '';
 
-            if (!empty($user_emp_id)) {
-                $count_sql .= " WHERE t.tk_assignee = ?";
-                $count_params[] = $user_emp_id;
-                $count_types = 'i';
-            }
-
-            if (!empty($count_params)) {
-                $count_stmt = $conn->prepare($count_sql);
-                $count_stmt->bind_param($count_types, ...$count_params);
-                $count_stmt->execute();
-                $count_result = $count_stmt->get_result();
-            } else {
-                $count_result = $conn->query($count_sql);
-            }
-
-            $total_records = $count_result->fetch_row()[0];
-            $total_pages = ceil($total_records / $records_per_page);
 
 
             if ($result && $result->num_rows > 0) {
@@ -253,9 +223,9 @@ if (!empty($user_email)) {
     </div>
     <div class="offcanvas-body pt-0" style="overflow-y:auto;">
         <div class="d-flex align-items-center mb-3">
-            <div class="rounded-circle bg-warning text-white d-flex justify-content-center align-items-center" style="width:40px;height:40px;font-weight:bold;font-size:1.2rem;">
-                <span id="offcanvas-ticket-initials">SS</span>
-            </div>
+            <!-- <div class="rounded-circle bg-warning text-white d-flex justify-content-center align-items-center" style="width:40px;height:40px;font-weight:bold;font-size:1.2rem;">
+                <span id="offcanvas-ticket-initials"></span>
+            </div> -->
             <div class="ms-3">
                 <div><strong id="offcanvas-ticket-creator"></strong></div>
             </div>
@@ -265,7 +235,7 @@ if (!empty($user_email)) {
             <p class="mb-1" id="offcanvas-ticket-description"></p>
             <p class="mb-0">Warm Regards,</p>
         </div>
-        
+
         <!-- Conversation History -->
         <div class="conversation-area mb-4" style="max-height: 200px; overflow-y: auto;">
             <h6 class="text-muted mb-3">Conversation History</h6>
@@ -273,7 +243,7 @@ if (!empty($user_email)) {
                 <!-- Messages will be loaded here -->
             </div>
         </div>
-        
+
         <div class="position-absolute bottom-0 start-0 w-100 px-4 pb-3" style="background: #fff;">
             <form id="messageForm" class="d-flex align-items-center">
                 <input type="text" class="form-control me-2" id="messageInput" placeholder="Type a message..." required>
