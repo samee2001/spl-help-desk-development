@@ -68,7 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Insert log into tb_ticket_log
             $last_ticket_id = $conn->insert_id;
             $log_status = 'Open';
-            $log_time = date('Y-m-d H:i:s');
+            date_default_timezone_set('Asia/Colombo');
+            $log_time = date('M d, Y H:i:s');
             $stmt_log = $conn->prepare("INSERT INTO tb_ticket_log (tk_id, status_name, changed_at) VALUES (?, ?, ?)");
             $stmt_log->bind_param("iss", $last_ticket_id, $log_status, $log_time);
             $stmt_log->execute();
