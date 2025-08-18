@@ -195,7 +195,7 @@ if (!empty($user_email)) {
 </div>
 
 <!-- Offcanvas for Ticket Details -->
-<div class="offcanvas offcanvas-bottom" tabindex="-1" id="ticketDetailsOffcanvas" aria-labelledby="ticketDetailsLabel" style="height: 50vh;">
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="ticketDetailsOffcanvas" aria-labelledby="ticketDetailsLabel" style="height: 60vh;">
     <div class="offcanvas-header d-flex flex-column align-items-start">
         <div class="w-100 d-flex justify-content-between align-items-center">
             <div>
@@ -239,11 +239,26 @@ if (!empty($user_email)) {
         <!-- START: two-column layout: left = conversation, right = vertical form -->
         <style>
             /* variables: change --conversation-height to adjust the box size */
-            :root { --conversation-height: 380px; } /* e.g. 280px or 40vh */
+            :root {
+                --conversation-height: 380px;
+            }
+
+            /* e.g. 280px or 40vh */
 
             /* right vertical panel inside offcanvas */
-            .offcanvas-body .offcanvas-content-row { display: flex; gap: 16px; align-items: flex-start; padding-bottom: 120px; }
-            .offcanvas-left { flex: 1 1 auto; min-width: 0; } /* allow ellipsis/scrolling */
+            .offcanvas-body .offcanvas-content-row {
+                display: flex;
+                gap: 16px;
+                align-items: flex-start;
+                padding-bottom: 120px;
+            }
+
+            .offcanvas-left {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            /* allow ellipsis/scrolling */
 
             /* conversation box (adjust height via --conversation-height) */
             .conversation-area {
@@ -258,24 +273,35 @@ if (!empty($user_email)) {
 
             .right-vertical-panel {
                 width: 340px;
-                max-width: 45%;
+
                 background: #fff;
                 border-left: 1px solid #e9ecef;
                 padding: 12px;
-                box-shadow: -2px 0 8px rgba(0,0,0,0.03);
-                max-height: calc(60vh - 140px);
+                box-shadow: -2px 0 8px rgba(0, 0, 0, 0.03);
+                max-height: 380px;
                 overflow-y: auto;
             }
 
             @media (max-width: 768px) {
-                .offcanvas-body .offcanvas-content-row { flex-direction: column; }
-                .right-vertical-panel { max-width: 100%; width: 100%; }
+                .offcanvas-body .offcanvas-content-row {
+                    flex-direction: column;
+                }
+
+                .right-vertical-panel {
+                    max-width: 100%;
+                    width: 100%;
+                }
+
                 /* smaller conversation height on small screens */
-                :root { --conversation-height: 220px; }
+                :root {
+                    --conversation-height: 220px;
+                }
             }
 
             /* keep bottom message form visible by reserving space */
-            .offcanvas-body { padding-bottom: 50px; }
+            .offcanvas-body {
+                padding-bottom: 50px;
+            }
         </style>
 
         <div class="offcanvas-content-row">
@@ -290,44 +316,10 @@ if (!empty($user_email)) {
             </div>
 
             <!-- Right vertical scrollable form (populated per ticket) -->
-            <aside class="right-vertical-panel" id="offcanvasRightPanel" aria-label="Ticket actions and form">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong>Ticket Actions / Quick Form</strong>
-                </div>
+            <div id="right-vertical-form-container">
+    <?php include 'side_vertical_form.php'; ?>
+</div>
 
-                <form id="offcanvasRightForm" method="post" action="api/submit_quick_form.php">
-                    <input type="hidden" id="right_form_ticket_id" name="ticket_id" value="">
-                    <div class="mb-3">
-                        <label for="right_form_summary" class="form-label">Summary</label>
-                        <input type="text" id="right_form_summary" name="summary" class="form-control" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="right_form_assignee" class="form-label">Assignee</label>
-                        <input type="text" id="right_form_assignee" name="assignee" class="form-control" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="right_form_priority" class="form-label">Priority</label>
-                        <select id="right_form_priority" name="priority" class="form-select">
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="right_form_description" class="form-label">Description</label>
-                        <textarea id="right_form_description" name="description" rows="6" class="form-control"></textarea>
-                    </div>
-
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-success btn-sm">Save</button>
-                        <button type="button" id="rightFormReset" class="btn btn-outline-secondary btn-sm">Reset</button>
-                        <button type="button" id="rightFormClose" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="offcanvas">Close</button>
-                    </div>
-                </form>
-            </aside>
         </div>
         <!-- END: two-column layout -->
 
@@ -344,23 +336,3 @@ if (!empty($user_email)) {
 </div>
 <link rel="stylesheet" href="css/conversation.css">
 <script src="js/table_off_canvas.js"></script>
-
-<script>
-    // document.addEventListener('DOMContentLoaded', function(){
-    //     var assigneeBtn = document.getElementById('assigneeBtn');
-    //     var successAlert = document.getElementById('successAlert');
-    //     if (assigneeBtn) {
-    //         assigneeBtn.addEventListener('click', function(e) {
-    //             e.stopPropagation();
-
-    //             assigneeBtn.outerHTML = '<a href="#" class="text-decoration-none">Maleesha Dewashan</a>';
-
-    //             successAlert.classList.remove('d-none');
-
-    //             setTimeout(function() {
-    //                 if (successAlert) successAlert.classList.add('d-none');
-    //             }, 2000);
-    //         });
-    //     }
-    // });
-</script>

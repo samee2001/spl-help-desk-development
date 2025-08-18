@@ -209,4 +209,20 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Error updating ticket status: " + error);
       });
   }
+
+  document.querySelectorAll(".ticket-row").forEach(function (row) {
+    row.addEventListener("click", function () {
+      var ticketId = this.getAttribute("data-id");
+      // Load the form via AJAX
+      fetch(
+        "components/side_vertical_form.php?ticket_id=" +
+          encodeURIComponent(ticketId)
+      )
+        .then((response) => response.text())
+        .then((html) => {
+          document.getElementById("right-vertical-form-container").innerHTML =
+            html;
+        });
+    });
+  });
 });
