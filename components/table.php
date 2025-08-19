@@ -23,8 +23,9 @@ if (!empty($user_email)) {
 <!-- <div id="successAlert" class="alert alert-success alert-dismissible fade show d-none" role="alert">
     Assignee updated to Maleesha Dewashan!
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-<div id="custom-alert" style="display:none; position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:9999; background:#f44336; color:#fff; padding:12px 24px; border-radius:5px; font-size:16px; box-shadow:0 2px 8px rgba(0,0,0,0.15);"></div> -->
+</div> -->
+
+<!-- <div id="popup-message" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999; background:#333; color:#fff; padding:14px 28px; border-radius:6px; font-size:17px; box-shadow:0 2px 8px rgba(0,0,0,0.18);"></div> -->
 
 <div class="table-responsive">
     <table class="table table-hover align-middle">
@@ -317,8 +318,8 @@ if (!empty($user_email)) {
 
             <!-- Right vertical scrollable form (populated per ticket) -->
             <div id="right-vertical-form-container">
-    <?php include 'side_vertical_form.php'; ?>
-</div>
+                <?php include 'side_vertical_form.php'; ?>
+            </div>
 
         </div>
         <!-- END: two-column layout -->
@@ -336,3 +337,14 @@ if (!empty($user_email)) {
 </div>
 <link rel="stylesheet" href="css/conversation.css">
 <script src="js/table_off_canvas.js"></script>
+<script>
+// function showPopupMessage(message, isSuccess) {
+//     var popup = document.getElementById('popup-message');
+//     popup.textContent = message;
+//     popup.style.background = isSuccess ? '#28a745' : '#dc3545';
+//     popup.style.display = 'block';
+//     setTimeout(function() {
+//         popup.style.display = 'none';
+//     }, 2500);
+// }
+</script>

@@ -57,7 +57,7 @@ if ($ticket_id > 0) {
                     while ($row = $rs->fetch_assoc()) {
                         $selected = ($currentTicket && (string)$currentTicket['org_id'] === (string)$row['org_id']) ? 'selected' : '';
                         echo '<option value="' . htmlspecialchars((string)$row['org_id']) . '" ' . $selected . '>'
-                           . htmlspecialchars($row['org_name']) . '</option>';
+                            . htmlspecialchars($row['org_name']) . '</option>';
                     }
                     $rs->close();
                 }
@@ -75,7 +75,7 @@ if ($ticket_id > 0) {
                     while ($row = $rs->fetch_assoc()) {
                         $selected = ($currentTicket && (string)$currentTicket['ur_id'] === (string)$row['ur_id']) ? 'selected' : '';
                         echo '<option value="' . htmlspecialchars((string)$row['ur_id']) . '" ' . $selected . '>'
-                           . htmlspecialchars($row['ur_name']) . '</option>';
+                            . htmlspecialchars($row['ur_name']) . '</option>';
                     }
                     $rs->close();
                 }
@@ -93,7 +93,7 @@ if ($ticket_id > 0) {
                     while ($row = $rs->fetch_assoc()) {
                         $selected = ($currentTicket && (string)$currentTicket['tk_assignee'] === (string)$row['emp_id']) ? 'selected' : '';
                         echo '<option value="' . htmlspecialchars((string)$row['emp_id']) . '" ' . $selected . '>'
-                           . htmlspecialchars($row['emp_email']) . '</option>';
+                            . htmlspecialchars($row['emp_email']) . '</option>';
                     }
                     $rs->close();
                 }
@@ -121,7 +121,7 @@ if ($ticket_id > 0) {
                     while ($row = $rs->fetch_assoc()) {
                         $selected = ($currentTicket && (string)$currentTicket['cat_id'] === (string)$row['cat_id']) ? 'selected' : '';
                         echo '<option value="' . htmlspecialchars((string)$row['cat_id']) . '" ' . $selected . '>'
-                           . htmlspecialchars($row['cat_name']) . '</option>';
+                            . htmlspecialchars($row['cat_name']) . '</option>';
                     }
                     $rs->close();
                 }
@@ -129,43 +129,81 @@ if ($ticket_id > 0) {
             </select>
         </div>
 
-        <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-success btn-sm">Save</button>
-            <button type="reset" class="btn btn-outline-secondary btn-sm">Reset</button>
+        <div class="d-flex gap-3 justify-content-center">
+            <button type="submit" class="btn btn-outline-secondary btn-sm"
+                onmouseover="this.style.backgroundColor='#34ce57'; this.style.color='white'; this.style.borderColor='#34ce57';"
+                onmouseout="this.style.backgroundColor=''; this.style.color=''; this.style.borderColor='';">Update</button>
+            <button type="reset" class="btn btn-outline-secondary btn-sm"
+                onmouseover="this.style.backgroundColor='red'; this.style.color='white'; this.style.borderColor='red';"
+                onmouseout="this.style.backgroundColor=''; this.style.color=''; this.style.borderColor='';">Reset</button>
             <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="offcanvas">Close</button>
         </div>
     </form>
-
     <script>
-    (function() {
-        function setSelectValue(id, value) {
-            var el = document.getElementById(id);
-            if (!el) return;
-            if (value !== undefined && value !== null && value !== '') {
-                el.value = String(value);
-                if (el.value !== String(value)) {
-                    var opt = el.querySelector('option[value="' + String(value).replace(/"/g, '\\"') + '"]');
-                    if (opt) opt.selected = true;
+        (function() {
+            function setSelectValue(id, value) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                if (value !== undefined && value !== null && value !== '') {
+                    el.value = String(value);
+                    if (el.value !== String(value)) {
+                        var opt = el.querySelector('option[value="' + String(value).replace(/"/g, '\\"') + '"]');
+                        if (opt) opt.selected = true;
+                    }
                 }
             }
-        }
 
-        function applyCurrentValues() {
-            setSelectValue("organization", document.getElementById("current_org")?.value || "");
-            setSelectValue("contact",      document.getElementById("current_contact")?.value || "");
-            setSelectValue("assignee",     document.getElementById("current_assignee")?.value || "");
-            setSelectValue("priority",     document.getElementById("current_priority")?.value || "");
-            setSelectValue("category",     document.getElementById("current_category")?.value || "");
-        }
+            function applyCurrentValues() {
+                setSelectValue("organization", document.getElementById("current_org")?.value || "");
+                setSelectValue("contact", document.getElementById("current_contact")?.value || "");
+                setSelectValue("assignee", document.getElementById("current_assignee")?.value || "");
+                setSelectValue("priority", document.getElementById("current_priority")?.value || "");
+                setSelectValue("category", document.getElementById("current_category")?.value || "");
+            }
 
-        // On full page load
-        document.addEventListener("DOMContentLoaded", applyCurrentValues);
+            // On full page load
+            document.addEventListener("DOMContentLoaded", applyCurrentValues);
 
-        // When offcanvas is shown (works if this partial is injected)
-        var panel = document.getElementById("offcanvasRightPanel");
-        if (panel) {
-            panel.addEventListener("shown.bs.offcanvas", applyCurrentValues);
-        }
-    })();
+            // When offcanvas is shown (works if this partial is injected)
+            var panel = document.getElementById("offcanvasRightPanel");
+            if (panel) {
+                panel.addEventListener("shown.bs.offcanvas", applyCurrentValues);
+            }
+        })();
+    </script>
+
+
+
+    <script>
+    // document.addEventListener('DOMContentLoaded', function() {
+    //     const form = document.getElementById('offcanvasRightForm');
+    //     if (!form) return;
+
+    //     form.addEventListener('submit', function(e) {
+    //         e.preventDefault();
+
+    //         const formData = new FormData(form);
+
+    //         fetch(form.action, {
+    //             method: 'POST',
+    //             body: formData
+    //         })
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             // Show popup in parent page
+    //             if (window.parent && window.parent.showPopupMessage) {
+    //                 window.parent.showPopupMessage(data.message || 'Unknown response', data.status === 'success');
+    //             } else if (typeof showPopupMessage === 'function') {
+    //                 showPopupMessage(data.message || 'Unknown response', data.status === 'success');
+    //             }
+    //             // Optionally, close the off-canvas or refresh the table here
+    //         })
+    //         .catch(() => {
+    //             if (typeof showPopupMessage === 'function') {
+    //                 showPopupMessage('An error occurred. Please try again.', false);
+    //             }
+    //         });
+    //     });
+    // });
     </script>
 </aside>

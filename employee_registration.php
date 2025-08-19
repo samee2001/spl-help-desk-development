@@ -4,6 +4,11 @@ session_start();
 include 'configs/db_connection.php';
 include 'email/send_confirmation_email.php';
 
+if (!isset($_SESSION['user_email'])) {
+    header('Location: login.php');
+    exit();
+}
+
 
 if (isset($_POST['register_employees'])) {
     // Get the input values
