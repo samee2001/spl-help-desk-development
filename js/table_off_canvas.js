@@ -225,4 +225,41 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
   });
+
+  // Delegate submit handling for the quick form so it works after dynamic loads
+  document.addEventListener("submit", function (e) {
+    var form = e.target;
+    if (form && form.id === "offcanvasRightForm") {
+      e.preventDefault();
+
+      var formData = new FormData(form);
+      fetch(form.action, { method: "POST", body: formData })
+        .then(function (res) {
+          return res.json();
+        })
+        .then(function (data) {
+          if (typeof showToast === "function") {
+            showToast(
+              data.message || "Unknown response",
+              data.status === "success"
+            );
+          }
+          if (data.status === "success") {
+            var offcanvasEl = document.getElementById("ticketDetailsOffcanvas");
+            if (offcanvasEl && window.bootstrap && bootstrap.Offcanvas) {
+              var offcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+              offcanvas.hide();
+            }
+            setTimeout(function () {
+              location.reload();
+            }, 2000);
+          }
+        })
+        .catch(function () {
+          if (typeof showToast === "function") {
+            showToast("An error occurred. Please try again.", false);
+          }
+        });
+    }
+  });
 });

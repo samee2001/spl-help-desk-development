@@ -3,6 +3,7 @@
 include'../configs/db_connection.php';// your DB connection file
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json');
     // Validate & sanitize inputs
     $organization = isset($_POST['organization']) ? intval($_POST['organization']) : null;
     $contact      = isset($_POST['contact']) ? intval($_POST['contact']) : null;
@@ -28,10 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($stmt->execute()) {
                 echo json_encode(['status' => 'success', 'message' => 'Ticket updated successfully!']);
-                header('Location: ../index.php');
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Update failed.']);
-                //header('Location: ../index.php');
             }
             $stmt->close();
         } else {

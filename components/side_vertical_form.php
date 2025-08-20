@@ -139,71 +139,40 @@ if ($ticket_id > 0) {
             <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="offcanvas">Close</button>
         </div>
     </form>
-    <script>
-        (function() {
-            function setSelectValue(id, value) {
-                var el = document.getElementById(id);
-                if (!el) return;
-                if (value !== undefined && value !== null && value !== '') {
-                    el.value = String(value);
-                    if (el.value !== String(value)) {
-                        var opt = el.querySelector('option[value="' + String(value).replace(/"/g, '\\"') + '"]');
-                        if (opt) opt.selected = true;
-                    }
-                }
-            }
+    <script src="js/apply_current_values.js">
+        // (function() {
+        //     function setSelectValue(id, value) {
+        //         var el = document.getElementById(id);
+        //         if (!el) return;
+        //         if (value !== undefined && value !== null && value !== '') {
+        //             el.value = String(value);
+        //             if (el.value !== String(value)) {
+        //                 var opt = el.querySelector('option[value="' + String(value).replace(/"/g, '\\"') + '"]');
+        //                 if (opt) opt.selected = true;
+        //             }
+        //         }
+        //     }
 
-            function applyCurrentValues() {
-                setSelectValue("organization", document.getElementById("current_org")?.value || "");
-                setSelectValue("contact", document.getElementById("current_contact")?.value || "");
-                setSelectValue("assignee", document.getElementById("current_assignee")?.value || "");
-                setSelectValue("priority", document.getElementById("current_priority")?.value || "");
-                setSelectValue("category", document.getElementById("current_category")?.value || "");
-            }
+        //     function applyCurrentValues() {
+        //         setSelectValue("organization", document.getElementById("current_org")?.value || "");
+        //         setSelectValue("contact", document.getElementById("current_contact")?.value || "");
+        //         setSelectValue("assignee", document.getElementById("current_assignee")?.value || "");
+        //         setSelectValue("priority", document.getElementById("current_priority")?.value || "");
+        //         setSelectValue("category", document.getElementById("current_category")?.value || "");
+        //     }
 
-            // On full page load
-            document.addEventListener("DOMContentLoaded", applyCurrentValues);
+        //     // On full page load
+        //     document.addEventListener("DOMContentLoaded", applyCurrentValues);
 
-            // When offcanvas is shown (works if this partial is injected)
-            var panel = document.getElementById("offcanvasRightPanel");
-            if (panel) {
-                panel.addEventListener("shown.bs.offcanvas", applyCurrentValues);
-            }
-        })();
+        //     // When offcanvas is shown (works if this partial is injected)
+        //     var panel = document.getElementById("offcanvasRightPanel");
+        //     if (panel) {
+        //         panel.addEventListener("shown.bs.offcanvas", applyCurrentValues);
+        //     }
+        // })();
     </script>
 
 
 
-    <script>
-    // document.addEventListener('DOMContentLoaded', function() {
-    //     const form = document.getElementById('offcanvasRightForm');
-    //     if (!form) return;
-
-    //     form.addEventListener('submit', function(e) {
-    //         e.preventDefault();
-
-    //         const formData = new FormData(form);
-
-    //         fetch(form.action, {
-    //             method: 'POST',
-    //             body: formData
-    //         })
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             // Show popup in parent page
-    //             if (window.parent && window.parent.showPopupMessage) {
-    //                 window.parent.showPopupMessage(data.message || 'Unknown response', data.status === 'success');
-    //             } else if (typeof showPopupMessage === 'function') {
-    //                 showPopupMessage(data.message || 'Unknown response', data.status === 'success');
-    //             }
-    //             // Optionally, close the off-canvas or refresh the table here
-    //         })
-    //         .catch(() => {
-    //             if (typeof showPopupMessage === 'function') {
-    //                 showPopupMessage('An error occurred. Please try again.', false);
-    //             }
-    //         });
-    //     });
-    // });
-    </script>
+    
 </aside>

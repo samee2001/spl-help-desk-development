@@ -268,6 +268,13 @@ if (!isset($_SESSION['user_email'])) {
             }
         });
     </script>
+    <!-- Toast container for short stack messages -->
+    <div id="toastContainer" class="toast-container position-fixed p-3" style="z-index: 2000; top: 30%; left: 50%; transform: translate(-50%, -50%);">
+    </div>
+
+    <script src="js/global_toast_helper.js">
+    </script>
+
 </body>
 
 </html>
