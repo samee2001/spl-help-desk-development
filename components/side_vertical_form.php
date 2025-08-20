@@ -131,48 +131,33 @@ if ($ticket_id > 0) {
 
         <div class="d-flex gap-3 justify-content-center">
             <button type="submit" class="btn btn-outline-secondary btn-sm"
+                id="updateBtn"
                 onmouseover="this.style.backgroundColor='#34ce57'; this.style.color='white'; this.style.borderColor='#34ce57';"
-                onmouseout="this.style.backgroundColor=''; this.style.color=''; this.style.borderColor='';">Update</button>
+                onmouseout="this.style.backgroundColor=''; this.style.color=''; this.style.borderColor='';">
+                <span id="updateBtnSpinner" class="spinner-border spinner-border-sm me-2" style="display:none;" role="status" aria-hidden="true"></span>
+                <span id="updateBtnText">Update</span>
+            </button>
             <button type="reset" class="btn btn-outline-secondary btn-sm"
                 onmouseover="this.style.backgroundColor='red'; this.style.color='white'; this.style.borderColor='red';"
                 onmouseout="this.style.backgroundColor=''; this.style.color=''; this.style.borderColor='';">Reset</button>
             <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="offcanvas">Close</button>
         </div>
     </form>
-    <script src="js/apply_current_values.js">
-        // (function() {
-        //     function setSelectValue(id, value) {
-        //         var el = document.getElementById(id);
-        //         if (!el) return;
-        //         if (value !== undefined && value !== null && value !== '') {
-        //             el.value = String(value);
-        //             if (el.value !== String(value)) {
-        //                 var opt = el.querySelector('option[value="' + String(value).replace(/"/g, '\\"') + '"]');
-        //                 if (opt) opt.selected = true;
-        //             }
-        //         }
-        //     }
-
-        //     function applyCurrentValues() {
-        //         setSelectValue("organization", document.getElementById("current_org")?.value || "");
-        //         setSelectValue("contact", document.getElementById("current_contact")?.value || "");
-        //         setSelectValue("assignee", document.getElementById("current_assignee")?.value || "");
-        //         setSelectValue("priority", document.getElementById("current_priority")?.value || "");
-        //         setSelectValue("category", document.getElementById("current_category")?.value || "");
-        //     }
-
-        //     // On full page load
-        //     document.addEventListener("DOMContentLoaded", applyCurrentValues);
-
-        //     // When offcanvas is shown (works if this partial is injected)
-        //     var panel = document.getElementById("offcanvasRightPanel");
-        //     if (panel) {
-        //         panel.addEventListener("shown.bs.offcanvas", applyCurrentValues);
-        //     }
-        // })();
+    <script src="js/apply_current_values.js"> </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById('offcanvasRightForm');
+            var btn = document.getElementById('updateBtn');
+            var spinner = document.getElementById('updateBtnSpinner');
+            var btnText = document.getElementById('updateBtnText');
+            if (form && btn && spinner && btnText) {
+                form.addEventListener('submit', function(e) {
+                    // Show spinner and change text
+                    spinner.classList.remove('d-none');
+                    btnText.textContent = 'Updating...';
+                    btn.disabled = true;
+                });
+            }
+        });
     </script>
-
-
-
-    
 </aside>

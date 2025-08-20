@@ -247,7 +247,8 @@ document.addEventListener("DOMContentLoaded", function () {
           if (data.status === "success") {
             var offcanvasEl = document.getElementById("ticketDetailsOffcanvas");
             if (offcanvasEl && window.bootstrap && bootstrap.Offcanvas) {
-              var offcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+              var offcanvas =
+                bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
               offcanvas.hide();
             }
             setTimeout(function () {
