@@ -1,5 +1,5 @@
 <?php $current_page = basename($_SERVER['PHP_SELF']); ?>
-<aside class="col-md-2 bg-light border-end min-vh-100 p-1">
+<aside class="col-md-2 bg-light border-end min-vh-100 p-2>
     <nav class="h-100 d-flex flex-column">
         <ul class="nav flex-column py-4 gap-2 h-100">
             <li class="nav-item">

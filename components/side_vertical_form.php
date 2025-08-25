@@ -32,6 +32,9 @@ if ($ticket_id > 0) {
 }
 ?>
 
+<head>
+   
+</head>
 <aside class="right-vertical-panel" id="offcanvasRightPanel" aria-label="Ticket actions and form">
     <div class="d-flex justify-content-between align-items-center mb-2">
         <strong>Ticket Actions / Quick Form</strong>
@@ -134,7 +137,7 @@ if ($ticket_id > 0) {
                 id="updateBtn"
                 onmouseover="this.style.backgroundColor='#34ce57'; this.style.color='white'; this.style.borderColor='#34ce57';"
                 onmouseout="this.style.backgroundColor=''; this.style.color=''; this.style.borderColor='';">
-                <span id="updateBtnSpinner" class="spinner-border spinner-border-sm me-2" style="display:none;" role="status" aria-hidden="true"></span>
+                <span id="updateBtnSpinner" class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
                 <span id="updateBtnText">Update</span>
             </button>
             <button type="reset" class="btn btn-outline-secondary btn-sm"
@@ -145,19 +148,73 @@ if ($ticket_id > 0) {
     </form>
     <script src="js/apply_current_values.js"> </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var form = document.getElementById('offcanvasRightForm');
-            var btn = document.getElementById('updateBtn');
+        document.getElementById('offcanvasRightForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+
+            var form = e.target;
+            var formData = new FormData(form);
+            var updateBtn = document.getElementById('updateBtn');
             var spinner = document.getElementById('updateBtnSpinner');
             var btnText = document.getElementById('updateBtnText');
-            if (form && btn && spinner && btnText) {
-                form.addEventListener('submit', function(e) {
-                    // Show spinner and change text
-                    spinner.classList.remove('d-none');
-                    btnText.textContent = 'Updating...';
-                    btn.disabled = true;
+            // Show spinner and disable button
+            spinner.classList.remove('d-none');
+            btnText.textContent = 'Updating...';
+            updateBtn.disabled = true;
+
+            fetch(form.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Find the alert placeholder
+                    var alertPlaceholder = document.querySelector('.alert-danger');
+                    if (!alertPlaceholder) {
+                        // If no alert is visible, create one
+                        alertPlaceholder = document.createElement('div');
+                        alertPlaceholder.className = 'alert alert-dismissible fade show position-absolute top-0 start-50 translate-middle-x mt-3 shadow';
+                        alertPlaceholder.style.zIndex = '1050';
+                        alertPlaceholder.style.minWidth = '300px';
+                        alertPlaceholder.style.maxWidth = '500px';
+                        alertPlaceholder.setAttribute('role', 'alert');
+
+                        // Find a container to append the new alert to
+                        var container = document.querySelector('.container-fluid.p-0');
+                        if (container) {
+                            container.insertBefore(alertPlaceholder, container.firstChild);
+                        }
+                    }
+
+                    // Update alert content and class
+                    alertPlaceholder.innerHTML = data.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+
+                    if (data.success && data.emailSent) {
+                        alertPlaceholder.classList.remove('alert-danger');
+                        alertPlaceholder.classList.add('alert-success');
+                        form.reset(); // Clear the form on success
+                        var offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('offcanvasRight'));
+                        if (offcanvas) {
+                            offcanvas.hide();
+                        }
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1500); // 1.5 seconds delay before reload
+                    } else {
+                        alertPlaceholder.classList.remove('alert-success');
+                        alertPlaceholder.classList.add('alert-danger');
+                    }
+                    // Hide spinner and enable button
+                    spinner.classList.add('d-none');
+                    btnText.textContent = 'Update';
+                    updateBtn.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Hide spinner and enable button
+                    spinner.classList.add('d-none');
+                    btnText.textContent = 'Update';
+                    updateBtn.disabled = false;
                 });
-            }
         });
     </script>
 </aside>
