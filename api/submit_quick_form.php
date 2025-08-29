@@ -1,8 +1,8 @@
 <?php
 // Include DB + mailer
 include '../configs/db_connection.php';
-include '../configs/email_config.php'; 
-include '../email/send_ticket_change_mail.php';// make sure this defines sendTicketChangeEmail()
+include '../configs/email_config.php';
+include '../email/send_ticket_change_mail.php'; // make sure this defines sendTicketChangeEmail()
 
 // Enable exceptions for mysqli so we can use try/catch
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);

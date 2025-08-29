@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Email and password are required.";
     } else {
         // Use prepared statements to prevent SQL injection
-        $stmt = $conn->prepare("SELECT ur_password, ur_email FROM tb_user WHERE ur_email = ?");
+        $stmt = $conn->prepare("SELECT ur_id, ur_password, ur_email FROM tb_user WHERE ur_email = ?");
         if ($stmt) {
             $stmt->bind_param("s", $email);
             $stmt->execute();
@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     session_regenerate_id(true); // Prevent session fixation
                     $_SESSION['loggedin'] = true;
                     $_SESSION['user_email'] = $email;
+                    $_SESSION['user_id'] = $user['ur_id'];
                     $_SESSION['session_id'] = session_id(); // Store session ID
                     // Redirect to the main application page
                     header("Location: index.php");
