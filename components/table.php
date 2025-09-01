@@ -1,6 +1,7 @@
 <?php
 include 'configs/db_connection.php';
 
+
 // Get the logged-in user's employee ID
 $user_email = $_SESSION['user_email'] ?? '';
 $user_emp_id = null;
@@ -98,8 +99,8 @@ if (!empty($user_email)) {
                 $types .= str_repeat('s', 9);
             }
 
-            // Apply status filter if selected
-            if (!empty($status_filter)) {
+            // Apply status filter if selected and not 'All'
+            if ($status_filter !== '' && $status_filter !== 'All') {
                 $sql .= (empty($user_emp_id) && empty($search_query) ? " WHERE" : " AND") . " t.status_name = ?";
                 $params[] = $status_filter;
                 $types .= 's';

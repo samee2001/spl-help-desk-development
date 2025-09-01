@@ -10,17 +10,20 @@ require_once 'api/access_permission.php';
 // Permission: can the current user add an employee?
 $canAddEmployee = userHasPermission($conn, $_SESSION['user_id'] ?? 0, 'add_employee');
 $canCreateTicket = userHasPermission($conn, $_SESSION['user_id'] ?? 0, 'create_ticket');
+// Current selected status (persist selection)
+$currentStatus = isset($_GET['status']) ? trim($_GET['status']) : '';
 ?>
 
 <div class="d-flex flex-wrap align-items-center justify-content-center mb-3 gap-3">
     <div>
         <select class="form-select">
-            <option value="">Select Status</option>
-            <option value="Open">Open</option>
-            <option value="Accepted">Accepted</option>
-            <option value="Waiting">Waiting</option>
-            <option value="Closed">Closed</option>
-            <option value="Unassigned">Unassigned</option>
+            <option value="" <?php echo $currentStatus === '' ? 'selected' : ''; ?>>Select Status</option>
+            <option value="Open" <?php echo $currentStatus === 'Open' ? 'selected' : ''; ?>>Open</option>
+            <option value="Accepted" <?php echo $currentStatus === 'Accepted' ? 'selected' : ''; ?>>Accepted</option>
+            <option value="Waiting" <?php echo $currentStatus === 'Waiting' ? 'selected' : ''; ?>>Waiting</option>
+            <option value="Closed" <?php echo $currentStatus === 'Closed' ? 'selected' : ''; ?>>Closed</option>
+            <option value="Unassigned" <?php echo $currentStatus === 'Unassigned' ? 'selected' : ''; ?>>Unassigned</option>
+            <option value="All" <?php echo $currentStatus === 'All' ? 'selected' : ''; ?>>All</option>
         </select>
     </div>
     <p><?php echo htmlspecialchars($_SESSION['user_id'] ?? 'no'); ?></p>
