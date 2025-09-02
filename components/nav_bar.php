@@ -30,62 +30,14 @@
                     <li>
                         <hr class="dropdown-divider my-2">
                     </li>
-                    <li><a class="dropdown-item text-danger py-2 px-3 fs-6" href="logout.php" style="text-decoration:none;">Log Out</a></li>
+                    <li><a class="dropdown-itemm text-danger py-2 px-3 fs-6" href="logout.php" style="text-decoration:none;">Log Out</a></li>
                 </ul>
             </div>
         </div>
     </div>
 </nav>
 
-<!-- Theme Switcher Script -->
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const rootElement = document.documentElement;
-        const themeToggleButton = document.getElementById('themeToggle');
-        const mainNav = document.getElementById('mainNav');
-        const mainSidebar = document.getElementById('mainSidebar'); // Get the sidebar
-        const THEME_KEY = 'bsTheme';
+<!-- Theme Management -->
+<link rel="stylesheet" href="css/theme_management.css">
 
-        function applyTheme(theme) {
-            // Set Bootstrap theme
-            rootElement.setAttribute('data-bs-theme', theme);
-
-            // Update navbar classes
-            if (mainNav) {
-                mainNav.classList.toggle('navbar-light', theme === 'light');
-                mainNav.classList.toggle('bg-light', theme === 'light');
-                mainNav.classList.toggle('navbar-dark', theme === 'dark');
-                mainNav.classList.toggle('bg-dark', theme === 'dark');
-            }
-
-            // Update sidebar classes
-            if (mainSidebar) {
-                mainSidebar.classList.toggle('bg-light', theme === 'light');
-                mainSidebar.classList.toggle('bg-dark', theme === 'dark');
-            }
-
-            // Update toggle button icon
-            if (themeToggleButton) {
-                themeToggleButton.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-                themeToggleButton.setAttribute('aria-label', `Toggle ${theme === 'dark' ? 'light' : 'dark'} mode`);
-            }
-
-            // Save theme to localStorage
-            localStorage.setItem(THEME_KEY, theme);
-        }
-
-        // Apply saved theme or system preference on page load
-        const savedTheme = localStorage.getItem(THEME_KEY) ||
-            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        applyTheme(savedTheme);
-
-        // Add click listener for theme toggle
-        if (themeToggleButton) {
-            themeToggleButton.addEventListener('click', () => {
-                const currentTheme = rootElement.getAttribute('data-bs-theme');
-                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                applyTheme(newTheme);
-            });
-        }
-    });
-</script>
+<script src="js/theme_management.js"></script>

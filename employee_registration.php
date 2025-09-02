@@ -18,7 +18,7 @@ if (isset($_POST['register_employees'])) {
     $emp_organization = $_POST['reg_emp_org'];
 
     // Check if the email is in the required format (xxx@sadaharitha.com)
-    if (!preg_match('/^[a-zA-Z0-9._%+-]+@gmail\.com$/', $emp_email)) {
+    if (!preg_match('/^[a-zA-Z0-9._%+-]+@sadaharitha\.com$/', $emp_email)) {
         $_SESSION['error'] = "Please use a valid email like xxx@sadaharitha.com.";
         header("Location: employee_registration.php"); // Redirect back to the registration page
         exit();
@@ -47,7 +47,7 @@ if (isset($_POST['register_employees'])) {
     if ($insert_stmt->execute()) {
         // Send confirmation email
         $subject = "Welcome to Sadaharitha - Employee Registration Confirmation";
-        
+
         // Get organization name for the email
         $org_query = "SELECT org_name FROM tb_organization WHERE org_id = ?";
         $org_stmt = $conn->prepare($org_query);
@@ -56,14 +56,14 @@ if (isset($_POST['register_employees'])) {
         $org_result = $org_stmt->get_result();
         $org_row = $org_result->fetch_assoc();
         $emp_organization_name = $org_row['org_name'];
-        
+
         // Start output buffering to capture the HTML template
         ob_start();
         include 'email/confirmation_mail_body.php';
         $message = ob_get_clean();
-        
+
         $emailSent = sendConfirmationEmail($emp_email, $subject, $message);
-        
+
         if ($emailSent) {
             $_SESSION['success'] = "Registration successful! Employee added..🙂";
         } else {
@@ -89,6 +89,7 @@ if (isset($_POST['register_employees'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Employees</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/add_emp_form.css">
 </head>
@@ -128,6 +129,7 @@ if (isset($_POST['register_employees'])) {
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.js"></script>
 </body>
 
 </html>

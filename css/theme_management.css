@@ -1,0 +1,77 @@
+/* Define styles based on the data-bs-theme attribute */
+[data-bs-theme="light"] #mainNav,
+[data-bs-theme="light"] #mainSidebar {
+  background-color: #f8f9fa !important;
+  /* Bootstrap's default bg-light color */
+}
+
+[data-bs-theme="dark"] #mainNav,
+[data-bs-theme="dark"] #mainSidebar {
+  background-color: #212529 !important;
+  /* Bootstrap's default bg-dark color */
+}
+
+/* Ensure nav links are correct color in dark mode */
+[data-bs-theme="dark"] #mainNav .nav-link {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+[data-bs-theme="dark"] #mainNav .nav-link:hover {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+[data-bs-theme="dark"] #mainNav .navbar-brand {
+  color: #fff;
+}
+
+/*
+ * Dark Mode Overrides for Offcanvas Components in table.php
+ */
+
+/* Target conversation area and vertical form when dark mode is active */
+[data-bs-theme="dark"] .conversation-area,
+[data-bs-theme="dark"] .right-vertical-panel {
+  background: #2b3035 !important;
+  /* A slightly lighter dark color for contrast */
+  border-color: #495057 !important;
+  color: #dee2e6;
+  /* Ensure text inside is light */
+}
+
+/* Target the message input container at the bottom of the offcanvas */
+[data-bs-theme="dark"] .offcanvas-body .position-absolute.bottom-0 {
+  background: #212529 !important;
+  /* Match the main dark background */
+}
+
+/*
+    * Dark Mode Overrides for .form_style in employee_registration.php
+    */
+[data-bs-theme="dark"] .form_style {
+  background-color: #2b3035;
+  /* A slightly lighter dark color */
+  border-color: #495057;
+  color: #dee2e6;
+  /* Light text for dark backgrounds */
+}
+
+/* Ensure form labels and other text inside the form are also light */
+[data-bs-theme="dark"] .form_style label,
+[data-bs-theme="dark"] .form_style h2 {
+  color: #dee2e6;
+}
+
+/*
+    * Dark Mode Overrides for Footer
+    */
+[data-bs-theme="light"] #mainFooter {
+  background-color: #f8f9fa !important;
+  /* Bootstrap's default bg-light color */
+}
+
+[data-bs-theme="dark"] #mainFooter {
+  background-color: #212529 !important;
+  /* Bootstrap's default bg-dark color */
+  border-top-color: #343a40 !important;
+  /* Darker border for dark mode */
+}
