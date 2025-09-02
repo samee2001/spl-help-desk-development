@@ -1,41 +1,91 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+<nav id="mainNav" class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="index.php">
-            <img src="assets/sadaharitha_logo_black.png" alt="Company Logo" style="height: 30px;" class="me-2">
+            <img src="assets/sadaharitha_logo_black.png" alt="Company Logo" style="height:30px;" class="me-2">
             <span>Sadaharitha IT Helpdesk</span>
         </a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav justify-content-center w-100 mb-2 mb-lg-0">
-                <!-- <li class="nav-item"><a class="nav-link" href="employee_registration.php">Add Employee</a></li> -->
                 <li class="nav-item"><a class="nav-link" href="#">Community</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">IT Tools</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Newsletters</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">HelpdeskWorld</a></li>
             </ul>
         </div>
-        <div class="d-flex">
-            <!-- <a href="logout.php" class="btn btn-outline-danger">
-                <i class="fas fa-sign-out-alt me-2"></i>Logout
-            </a> -->
-            <div class="d-flex justify-content-end p-2">
-                <div class="dropdown">
-                    <button class="btn btn-light dropdown-toggle border shadow-sm rounded" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user-circle fs-5 me-1"></i> </button>
-
-                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border rounded">
-                        <li><a class="dropdown-item py-2 px-3 fs-6" href="#"><?php echo htmlspecialchars($_SESSION['user_email']); ?></a></li>
-                        <br>
-                        <li><a class="dropdown-item py-2 px-3 fs-6" href="#">Account Settings</a></li>
-                        <li><a class="dropdown-item py-2 px-3 fs-6" href="#">Help</a></li>
-                        <li><a class="dropdown-item py-2 px-3 fs-6" href="#">Guidelines</a></li>
-                        <li>
-                            <hr class="dropdown-divider my-2">
-                        </li>
-                        <li><a class="dropdown-itemm text-danger py-2 px-3 fs-6" href="logout.php" style="text-decoration: none;">Log Out</a></li>
-                    </ul>
-                </div>
-
+        <div class="d-flex align-items-center">
+            <!-- Theme Toggle Button -->
+            <button id="themeToggle" type="button" class="btn btn-outline-secondary me-2" aria-label="Toggle dark mode">
+                <i class="fas fa-moon"></i>
+            </button>
+            <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle border shadow-sm rounded" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user-circle fs-5 me-1"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border rounded">
+                    <li><a class="dropdown-item py-2 px-3 fs-6" href="#"><?php echo htmlspecialchars($_SESSION['user_email']); ?></a></li>
+                    <br>
+                    <li><a class="dropdown-item py-2 px-3 fs-6" href="#">Account Settings</a></li>
+                    <li><a class="dropdown-item py-2 px-3 fs-6" href="#">Help</a></li>
+                    <li><a class="dropdown-item py-2 px-3 fs-6" href="#">Guidelines</a></li>
+                    <li>
+                        <hr class="dropdown-divider my-2">
+                    </li>
+                    <li><a class="dropdown-item text-danger py-2 px-3 fs-6" href="logout.php" style="text-decoration:none;">Log Out</a></li>
+                </ul>
             </div>
         </div>
     </div>
 </nav>
+
+<!-- Theme Switcher Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const rootElement = document.documentElement;
+        const themeToggleButton = document.getElementById('themeToggle');
+        const mainNav = document.getElementById('mainNav');
+        const mainSidebar = document.getElementById('mainSidebar'); // Get the sidebar
+        const THEME_KEY = 'bsTheme';
+
+        function applyTheme(theme) {
+            // Set Bootstrap theme
+            rootElement.setAttribute('data-bs-theme', theme);
+
+            // Update navbar classes
+            if (mainNav) {
+                mainNav.classList.toggle('navbar-light', theme === 'light');
+                mainNav.classList.toggle('bg-light', theme === 'light');
+                mainNav.classList.toggle('navbar-dark', theme === 'dark');
+                mainNav.classList.toggle('bg-dark', theme === 'dark');
+            }
+
+            // Update sidebar classes
+            if (mainSidebar) {
+                mainSidebar.classList.toggle('bg-light', theme === 'light');
+                mainSidebar.classList.toggle('bg-dark', theme === 'dark');
+            }
+
+            // Update toggle button icon
+            if (themeToggleButton) {
+                themeToggleButton.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+                themeToggleButton.setAttribute('aria-label', `Toggle ${theme === 'dark' ? 'light' : 'dark'} mode`);
+            }
+
+            // Save theme to localStorage
+            localStorage.setItem(THEME_KEY, theme);
+        }
+
+        // Apply saved theme or system preference on page load
+        const savedTheme = localStorage.getItem(THEME_KEY) ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        applyTheme(savedTheme);
+
+        // Add click listener for theme toggle
+        if (themeToggleButton) {
+            themeToggleButton.addEventListener('click', () => {
+                const currentTheme = rootElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                applyTheme(newTheme);
+            });
+        }
+    });
+</script>

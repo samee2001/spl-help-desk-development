@@ -21,9 +21,16 @@ if (!empty($user_email)) {
 }
 ?>
 
+<style>
+    /* This ensures table links inherit the correct text color in both light and dark modes */
+    .table a {
+        color: inherit;
+    }
+</style>
+
 <div class="table-responsive">
     <table class="table table-hover align-middle">
-        <thead class="table-light">
+        <thead class="">
             <tr>
                 <!-- <th scope="col"><input type="checkbox"></th> -->
                 <th scope="col">Ticket ID <i class="fas fa-sort"></i></th>
