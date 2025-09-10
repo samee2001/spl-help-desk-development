@@ -12,7 +12,8 @@ use PHPMailer\PHPMailer\Exception;
 // Include the email configuration file
 include_once('../configs/email_config.php');
 
-function sendEmail($toEmail, $subject, $body) {
+function sendEmail($toEmail, $subject, $body)
+{
     $mail = new PHPMailer(true);  // Instantiate PHPMailer
     try {
         // Server settings
@@ -21,8 +22,19 @@ function sendEmail($toEmail, $subject, $body) {
         $mail->SMTPAuth = true;  // Enable SMTP authentication
         $mail->Username = SMTP_USERNAME;  // Your Gmail address
         $mail->Password = SMTP_PASSWORD;  // Your Gmail app-specific password
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;  // Use TLS encryption
-        $mail->Port = SMTP_PORT;  // Port 587 for TLS
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;  // Use SMTPS encryption
+        $mail->Port = SMTP_PORT;  // Port 465 for SMTPS
+
+        // --- THIS IS THE FIX ---
+        // Add these options to disable certificate verification for local development
+        $mail->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+        );
+        // --- END OF FIX ---
 
         // Recipients
         $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);  // Sender's email and name
@@ -35,7 +47,7 @@ function sendEmail($toEmail, $subject, $body) {
         $mail->isHTML(true);  // Send HTML email
         $mail->Subject = $subject;  // Subject of the email
         $mail->Body = $body;  // Body content of the email
-        $mail->addEmbeddedImage('../assets/sadaharitha_email.jpg','sadaharitha_logo');
+        $mail->addEmbeddedImage('../assets/sadaharitha_email.jpg', 'sadaharitha_logo');
         // Send the email
         $mail->send();
         return true;  // Email sent successfully
@@ -44,4 +56,3 @@ function sendEmail($toEmail, $subject, $body) {
         return false;  // If email fails to send
     }
 }
-?>

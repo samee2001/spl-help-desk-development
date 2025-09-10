@@ -1,7 +1,8 @@
 <?php
 // Ensure you have a mysqli $conn before this include
 
-include '../configs/db_connection.php';
+// In side_vertical_form.php
+include(__DIR__ . '/../configs/db_connection.php');
 
 // Normalize ticket_id from POST/GET (fallback to 0)
 $ticket_id = 0;

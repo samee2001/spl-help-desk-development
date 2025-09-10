@@ -1,9 +1,8 @@
 <?php
-// Gmail SMTP Settings
-define('SMTP_HOST', 'smtp.gmail.com');
+// Email Server Settings
+define('SMTP_HOST', 'splmail.sadaharitha.com');
 define('SMTP_PORT', 587);
-define('SMTP_USERNAME', 'sameerawijesekara2001@gmail.com'); // Replace with your Gmail email address
-define('SMTP_PASSWORD', 'boilgglacufyzyrz'); // Use your Gmail app-specific password here if 2FA is enabled
-define('SMTP_FROM_EMAIL', 'sameerawijesekar2001@gmail.com'); // The sender's email address (should be your Gmail address)
-define('SMTP_FROM_NAME', 'Sadaharitha'); // Sender's name (could be your name or company name)
-
+define('SMTP_USERNAME', 'ithelpdesk@sdhgroup.com'); // Use the provided username
+define('SMTP_PASSWORD', 'HelpIt#2025'); // Use the provided password
+define('SMTP_FROM_EMAIL', 'ithelpdesk@sadaharitha.com'); // The sender's email address
+define('SMTP_FROM_NAME', 'Sadaharitha IT Help Desk Development'); // Sender's name

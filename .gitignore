@@ -1,3 +1,6 @@
 /PHPMailer*/
 PHPMailer/
 PHPMailer
+
+# Ignore php imap
+php-imap/

@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     //insert the ticket    
     date_default_timezone_set('Asia/Colombo');
-    $created_at = date('F j, Y h:i A');
+    $created_at = date('F j, Y');
 
     // Validate required fields
     if (!$organization || !$contact || !$summary || !$category || !$assignee) {
@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if ($row = mysqli_fetch_assoc($result)) {
                 $assigneeEmail = $row['emp_email'];
             }
-                   
+
             // Fetch org_name, cat_name, and ur_name for email
             $org_name = $cat_name = $contact_name = '';
             // Organization name
@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $body = "
                         <html>
                         <body>
-                            <p>Hello, you have been assigned a new task. Here are the details:</p>
+                            <p>Hello $assignee_name, you have been assigned a new task. Here are the details:</p>
                             <br>
                             <p><b>From:</b> $org_name</p>
                             <p id='current-date-time'><b>Sent:</b> " . date('F j, Y h:i A') . "</p>

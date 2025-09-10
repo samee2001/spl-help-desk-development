@@ -140,7 +140,7 @@ if (!empty($user_email)) {
                     $priority = htmlspecialchars($row['tk_priority']);
                     $category = isset($row['cat_name']) ? htmlspecialchars($row['cat_name']) : 'N/A';
                     $status = isset($row['status_name']) ? htmlspecialchars($row['status_name']) : 'N/A';
-                    $created = date('M d, Y', strtotime($row['tk_created_at']));
+                    $created = isset ($row['tk_created_at']) ? htmlspecialchars($row['tk_created_at']) : 'N/A'; //date('M d, Y', strtotime($row['tk_created_at']));
                     $updated = isset($row['changed_at']) ? htmlspecialchars($row['changed_at']) : 'Not Updated';
                     //$due_date = isset($row['due_date']) && $row['due_date'] ? date('M d, Y', strtotime($row['due_date'])) : '';
 

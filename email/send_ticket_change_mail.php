@@ -24,6 +24,17 @@ function sendTicketChangeEmail($toEmail, $subject, $bodyHtml) {
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;  // Use TLS encryption
         $mail->Port = SMTP_PORT;  // Port 587 for TLS
 
+        // --- THIS IS THE FIX ---
+        // Add these options to disable certificate verification for local development
+        $mail->SMTPOptions = array(
+            'ssl' => array(
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            )
+        );
+        // --- END OF FIX ---
+
         // Recipients
         $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);  // Sender's email and name
         $mail->addAddress($toEmail);  // Add recipient's email
