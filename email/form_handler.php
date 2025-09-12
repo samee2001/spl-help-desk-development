@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $uploaded_files = [];
     if (!empty($_FILES['attachments']['name'][0])) {
         $allowed_types = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png', 'image/gif'];
-        $upload_dir = 'uploads/';
+        $upload_dir = '../uploads/';
         if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
 
         foreach ($_FILES['attachments']['tmp_name'] as $key => $tmp_name) {
@@ -49,9 +49,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 continue;
             }
 
-            $target_path = $upload_dir . uniqid() . '_' . $file_name;
+            $new_file_name = uniqid() . '_' . $file_name;
+            $target_path = $upload_dir . $new_file_name;
             if (move_uploaded_file($file_tmp, $target_path)) {
-                $uploaded_files[] = $target_path;
+                $uploaded_files[] = $new_file_name;
             } else {
                 $errors[] = "Failed to upload $file_name.";
             }
@@ -61,8 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // If no errors, insert into database
     if (empty($errors)) {
         $attachments = implode(',', $uploaded_files); // Store as comma-separated paths
-        $stmt = $conn->prepare("INSERT INTO tb_ticket (tk_summary, tk_description, tk_assignee,tk_creator,tk_priority, tk_created_at, org_id, ur_id,  cat_id) VALUES (?, ?, ?, ?,  ?, ?, ?,?,?)");
-        $stmt->bind_param("ssssssiii", $summary, $description, $assignee, $creator, $priority, $created_at, $organization, $contact,  $category);
+        $stmt = $conn->prepare("INSERT INTO tb_ticket (tk_summary, tk_description, tk_assignee,tk_creator,tk_priority, tk_created_at, org_id, ur_id,  cat_id, tk_file_type) VALUES (?, ?, ?, ?,  ?, ?, ?,?,?,?)");
+        $stmt->bind_param("ssssssiiis", $summary, $description, $assignee, $creator, $priority, $created_at, $organization, $contact,  $category, $attachments);
 
         if ($stmt->execute()) {
             // Insert log into tb_ticket_log

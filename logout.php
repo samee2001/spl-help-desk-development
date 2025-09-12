@@ -9,5 +9,6 @@ session_destroy();
 
 // Redirect to the login page
 header("Location: register.php");
+
 exit();
 ?>

@@ -1,9 +1,10 @@
-
 <?php
+// email_config.php
+// IMAP configuration for email processing
 
 // IMAP Server Settings (for reading incoming emails)
-define('IMAP_SERVER', '{imap.gmail.com:993/imap/ssl}INBOX');
-define('IMAP_USERNAME', 'sameerawijesekara2001@gmail.com'); // The email account to read from
-define('IMAP_PASSWORD', 'boilgglacufyzyrz'); // The App Password for this email account
+define('IMAP_SERVER', '{splmail.sadaharitha.com:993/imap/ssl/novalidate-cert}INBOX');
+define('IMAP_USERNAME', 'ithelpdesk@sdhgroup.com');
+define('IMAP_PASSWORD', 'HelpIt#2025');
 
 ?>

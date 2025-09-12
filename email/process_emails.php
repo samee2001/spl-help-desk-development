@@ -1,59 +1,58 @@
 <?php
+// email_processor.php
+// This script connects to an IMAP mailbox, fetches unread emails,
+// saves them to the database, and forwards them to agents based on keywords.
 
 // --- Manual Autoloader for php-imap (replaces Composer) ---
 spl_autoload_register(function ($class) {
-    // The namespace of the library
     $prefix = 'PhpImap\\';
-    // The base directory for the library
     $base_dir = __DIR__ . '/../php-imap/src/PhpImap/';
-
-    // Check if the class uses the namespace prefix
     $len = strlen($prefix);
     if (strncmp($prefix, $class, $len) !== 0) {
-        return; // Not a class from this library, do nothing
+        return;
     }
-
-    // Get the relative class name (e.g., Mailbox)
     $relative_class = substr($class, $len);
-
-    // Build the file path
     $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
-
-    // If the file exists, require it
     if (file_exists($file)) {
         require $file;
     }
 });
 
-// --- Include Other Libraries and Configurations ---
+// --- Include Libraries and Configurations ---
 
-// 1. PHPMailer Library (can be removed if not used elsewhere, but safe to keep)
+// 1. PHPMailer Library
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
 require __DIR__ . '/../PHPMailer/src/Exception.php';
 require __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require __DIR__ . '/../PHPMailer/src/SMTP.php';
 
-// 2. Your Configuration Files
-require __DIR__ . '/../configs/email_config.php'; // For sending emails (SMTP)
-require __DIR__ . '/../configs/imap_config.php';  // For reading emails (IMAP)
-require __DIR__ . '/../configs/db_connection.php'; // For database connection
+// 2. Your Configuration Files (with correct paths)
+require __DIR__ . '/../configs/db_connection.php';      // Database connection
+require __DIR__ . '/../configs/imap_config.php';      // IMAP configuration
+require __DIR__ . '/../configs/email_config.php';     // SMTP configuration
 
 // 3. Use the php-imap Mailbox class
 use PhpImap\Mailbox;
 
-// --- Script Logic ---
+// --- Main Configuration ---
 
-echo "Starting email logging process...\n";
+// Agent forwarding rules from your new script
+$forwarding_rules = [
+    'software'   => 'padmall@sadaharitha.com',
+    'network'    => 'wasanthas@sadaharitha.com',
+    'commission' => 'jayanr@sadaharitha.com',
+];
+
+echo "Starting email processing...\n";
 
 try {
-    // Connect to the mailbox using the php-imap library
+    // Connect to the mailbox using constants from imap_config.php
     $mailbox = new Mailbox(
-        IMAP_SERVER,      // IMAP server path from your config
-        IMAP_USERNAME,    // Username from your config
-        IMAP_PASSWORD,    // Password from your config
-        __DIR__ . '/../attachments' // Optional: A directory to save email attachments
+        IMAP_SERVER,
+        IMAP_USERNAME,
+        IMAP_PASSWORD,
+        __DIR__ . '/../attachments' // Attachment directory
     );
 
     echo "Successfully connected to the mailbox.\n";
@@ -70,38 +69,94 @@ try {
 
     foreach ($mailIds as $mailId) {
         $mail = $mailbox->getMail($mailId);
-        $subject = $mail->subject ?? '[No Subject]'; // Use a fallback for safety
+
         $fromAddress = $mail->fromAddress;
+        $subject = $mail->subject ?? 'No Subject';
+        $body = $mail->textHtml ?: nl2br($mail->textPlain ?? ''); // Get HTML body, fallback to plain text
+        $receivedDate = date('Y-m-d H:i:s', strtotime($mail->date));
 
         echo "\n----------------------------------------\n";
-        echo "Processing email #{$mailId} from {$fromAddress} | Subject: {$subject}\n";
+        echo "Processing email from {$fromAddress} | Subject: {$subject}\n";
 
-        // --- Database Insert Logic ---
+        // Determine forwarding address based on subject keywords
+        $forward_to = null;
+        foreach ($forwarding_rules as $keyword => $agent_email) {
+            if (stripos($subject, $keyword) !== false) {
+                $forward_to = $agent_email;
+                echo "Keyword '{$keyword}' found. Will forward to: {$agent_email}\n";
+                break;
+            }
+        }
+
+        // Insert email into the database FIRST
         try {
-            // Prepare the SQL statement to prevent SQL injection
-            $sql = "INSERT INTO tb_email_logs (subject, from_address) VALUES (?, ?)";
+            $sql = "INSERT INTO tb_email_logs (from_address, subject, body, received_at, forwarded_to) VALUES (?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
+            // Use "s" for all types as they are all strings here
+            $stmt->bind_param("sssss", $fromAddress, $subject, $body, $receivedDate, $forward_to);
 
-            // Bind the subject and sender's email to the statement
-            $stmt->bind_param("ss", $subject, $fromAddress);
-
-            // Execute the statement
             if ($stmt->execute()) {
-                echo "Successfully saved subject to database.\n";
-                // Mark email as read ONLY if it was saved to DB successfully
-                $mailbox->markMailAsRead($mailId);
-                echo "Marked email as read.\n";
+                echo "Successfully saved email to database.\n";
             } else {
-                echo "Error saving subject to database: " . $stmt->error . "\n";
+                echo "Error saving email to database: " . $stmt->error . "\n";
             }
             $stmt->close();
         } catch (Exception $db_e) {
             echo "Database Error: " . $db_e->getMessage() . "\n";
         }
+
+        // Forward the email if a matching agent was found
+        if ($forward_to) {
+            $forwarder = new PHPMailer(true);
+            try {
+                // Server settings from email_config.php
+                $forwarder->isSMTP();
+                $forwarder->Host = SMTP_HOST;
+                $forwarder->SMTPAuth = true;
+                $forwarder->Username = SMTP_USERNAME;
+                $forwarder->Password = SMTP_PASSWORD;
+                $forwarder->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $forwarder->Port = SMTP_PORT;
+
+                // This is the fix for the "certificate verify failed" error
+                $forwarder->SMTPOptions = [
+                    'ssl' => [
+                        'verify_peer' => false,
+                        'verify_peer_name' => false,
+                        'allow_self_signed' => true
+                    ]
+                ];
+
+                // Sender and recipient
+                $forwarder->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
+                $forwarder->addAddress($forward_to);
+                $forwarder->addReplyTo($fromAddress); // Allow agent to reply directly
+
+                // Content
+                $forwarder->isHTML(true); // Send as HTML
+                $forwarder->Subject = "Fwd: " . $subject;
+                $forwarder->Body    = "<b>--- Original Message From: {$fromAddress} ---</b><br><hr>" . $body;
+                $forwarder->AltBody = "--- Original Message From: {$fromAddress} ---\n\n" . strip_tags($body);
+
+                $forwarder->send();
+                echo "Email successfully forwarded to {$forward_to}.\n";
+
+            } catch (Exception $e) {
+                echo "PHPMailer Error: Could not forward email. {$forwarder->ErrorInfo}\n";
+            }
+        } else {
+            echo "No matching keyword found. Email was logged but not forwarded.\n";
+        }
+
+        // Mark the email as read
+        $mailbox->markMailAsRead($mailId);
+        echo "Marked email as read.\n";
     }
+
 } catch (Exception $e) {
-    die("An error occurred while connecting or processing emails: " . $e->getMessage() . "\n");
+    die("An error occurred: " . $e->getMessage() . "\n");
 }
 
 echo "\n----------------------------------------\n";
-echo "Email logging complete.\n";
+echo "Email processing complete.\n";
+?>

@@ -33,7 +33,7 @@
 
                     <div class="list-group list-group-flush">
                         <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-                            <span class="fw-normal text-dark">Proposal Login</span>
+                            <span class="fw-normal">Proposal Login</span>
                             <div class="d-flex align-items-center gap-4">
                                 <div class="form-check form-switch mb-0">
                                     <input class="form-check-input" type="checkbox" role="switch" id="toggleProposalLogin" checked>
@@ -45,7 +45,7 @@
                         </div>
 
                         <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-                            <span class="fw-normal text-dark">Refund</span>
+                            <span class="fw-normal">Refund</span>
                             <div class="d-flex align-items-center gap-4">
                                 <div class="form-check form-switch mb-0">
                                     <input class="form-check-input" type="checkbox" role="switch" id="toggleRefund" checked>
@@ -57,7 +57,7 @@
                         </div>
 
                         <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-                            <span class="fw-normal text-dark">Reactivation</span>
+                            <span class="fw-normal">Reactivation</span>
                             <div class="d-flex align-items-center gap-4">
                                 <div class="form-check form-switch mb-0">
                                     <input class="form-check-input" type="checkbox" role="switch" id="toggleReactivation" checked>
@@ -69,7 +69,7 @@
                         </div>
 
                         <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-                            <span class="fw-normal text-dark">Harvest Payment</span>
+                            <span class="fw-normal">Harvest Payment</span>
                             <div class="d-flex align-items-center gap-4">
                                 <div class="form-check form-switch mb-0">
                                     <input class="form-check-input" type="checkbox" role="switch" id="toggleHarvest" checked>
@@ -81,7 +81,7 @@
                         </div>
 
                         <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-                            <span class="fw-normal text-dark">Sales Force</span>
+                            <span class="fw-normal">Sales Force</span>
                             <div class="d-flex align-items-center gap-4">
                                 <div class="form-check form-switch mb-0">
                                     <input class="form-check-input" type="checkbox" role="switch" id="toggleSalesForce" checked>
@@ -93,7 +93,7 @@
                         </div>
 
                         <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-                            <span class="fw-normal text-dark">Payment history</span>
+                            <span class="fw-normal">Payment history</span>
                             <div class="d-flex align-items-center gap-4">
                                 <div class="form-check form-switch mb-0">
                                     <input class="form-check-input" type="checkbox" role="switch" id="togglePaymentHistory" checked>
@@ -105,7 +105,7 @@
                         </div>
 
                         <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-                            <span class="fw-normal text-dark">Document management</span>
+                            <span class="fw-normal">Document management</span>
                             <div class="d-flex align-items-center gap-4">
                                 <div class="form-check form-switch mb-0">
                                     <input class="form-check-input" type="checkbox" role="switch" id="toggleDocumentManagement" checked>
@@ -117,7 +117,7 @@
                         </div>
 
                         <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-                            <span class="fw-normal text-dark">Intranet</span>
+                            <span class="fw-normal">Intranet</span>
                             <div class="d-flex align-items-center gap-4">
                                 <div class="form-check form-switch mb-0">
                                     <input class="form-check-input" type="checkbox" role="switch" id="toggleIntranet" checked>
@@ -129,7 +129,7 @@
                         </div>
 
                         <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-                            <span class="fw-normal text-dark">Network</span>
+                            <span class="fw-normal">Network</span>
                             <div class="d-flex align-items-center gap-4">
                                 <div class="form-check form-switch mb-0">
                                     <input class="form-check-input" type="checkbox" role="switch" id="toggleNetwork" checked>

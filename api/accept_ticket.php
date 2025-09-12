@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->execute()) {
             // Log the update
             date_default_timezone_set('Asia/Colombo');
-            $date = date('F j, Y H:i:s');
+            $date = date('F j, Y');
             $log_stmt = $conn->prepare("INSERT INTO tb_ticket_log (tk_id, status_name, changed_at) VALUES (?, ?, ?)");
             $log_stmt->bind_param('iss', $tk_id, $status_name, $date);
             $log_stmt->execute();

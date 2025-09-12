@@ -1,6 +1,6 @@
 <!-- Footer -->
 <footer id="mainFooter" class="py-3 fixed-bottom w-100 text-center border-top h-30">
     <div class="container text-center">
-        <p class="mb-0">&copy; 2025 Sadaharitha. All rights reserved.</p>
+        <p class="mb-0">&copy; 2025 Sadaharitha. All rights reserved. Help Desk Software 1.0</p>
     </div>
 </footer>

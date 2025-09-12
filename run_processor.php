@@ -40,7 +40,8 @@
                 if (isset($_POST['run_script'])) {
                     echo '<h3 class="mt-4">Script Output:</h3>';
                     
-                    // This is the exact same command we tried in the command line
+                    // This command uses the absolute path to your XAMPP PHP and the email script.
+                    // This is the most reliable way to execute it from a web page.
                     $command = '"C:\xampp\php\php.exe" -f "C:\xampp\htdocs\spl_help_desk_development_v2\email\process_emails.php"';
                     
                     // Use shell_exec to run the command and capture its output

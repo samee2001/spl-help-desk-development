@@ -51,22 +51,14 @@ if (!empty($user_email)) {
             // Database connection (adjust as needed)
             $search_query = $_GET['search'] ?? '';
             $status_filter = $_GET['status'] ?? ''; // Get the selected status filter
+            
+            // Pagination variables
+            $records_per_page = 10;
+            $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+            $offset = ($page - 1) * $records_per_page;
+
             // Base SQL with JOINs to get names instead of IDs
-            $sql = "SELECT 
-                t.tk_id, 
-                t.tk_summary, 
-                t.tk_priority, 
-                t.tk_created_at, 
-                t.tk_updated_at, 
-                t.tk_due_date as due_date,
-                t.tk_description,
-                t.tk_creator as creator_name,
-                assignee.emp_name as assignee_name,
-                org.org_name,
-                cat.cat_name,
-                t.status_name,
-                log.changed_at
-            FROM tb_ticket t
+            $base_sql = "FROM tb_ticket t
             LEFT JOIN tb_user creator ON t.tk_creator = creator.ur_email
             LEFT JOIN tb_employee assignee ON t.tk_assignee = assignee.emp_id
             LEFT JOIN tb_organization org ON t.org_id = org.org_id
@@ -78,20 +70,19 @@ if (!empty($user_email)) {
                 GROUP BY tk_id
             ) log ON t.tk_id = log.tk_id";
 
-
+            $where_clause = "";
             $params = [];
             $types = '';
 
             // Filter tickets by assigned user (if user is logged in)
             if (!empty($user_emp_id)) {
-                $sql .= " WHERE t.tk_assignee = ?";
+                $where_clause .= " WHERE t.tk_assignee = ?";
                 $params[] = $user_emp_id;
                 $types = 'i';
             }
 
             if (!empty($search_query)) {
-                // You can add more fields to search in
-                $sql .= (empty($user_emp_id) ? " WHERE" : " AND") . " (t.tk_summary LIKE ? 
+                $where_clause .= (empty($where_clause) ? " WHERE" : " AND") . " (t.tk_summary LIKE ? 
                           OR t.tk_description LIKE ? 
                           OR t.tk_id LIKE ? 
                           OR t.tk_creator LIKE ? 
@@ -108,24 +99,52 @@ if (!empty($user_email)) {
 
             // Apply status filter if selected and not 'All'
             if ($status_filter !== '' && $status_filter !== 'All') {
-                $sql .= (empty($user_emp_id) && empty($search_query) ? " WHERE" : " AND") . " t.status_name = ?";
+                $where_clause .= (empty($where_clause) ? " WHERE" : " AND") . " t.status_name = ?";
                 $params[] = $status_filter;
                 $types .= 's';
             }
 
-            $sql .= " ORDER BY t.tk_id DESC";
+            // Get total number of records for pagination
+            $count_sql = "SELECT COUNT(*) as total " . $base_sql . $where_clause;
+            if (!empty($params)) {
+                $count_stmt = $conn->prepare($count_sql);
+                $count_stmt->bind_param($types, ...$params);
+                $count_stmt->execute();
+                $count_result = $count_stmt->get_result();
+                $total_records = $count_result->fetch_assoc()['total'];
+            } else {
+                $count_result = $conn->query($count_sql);
+                $total_records = $count_result->fetch_assoc()['total'];
+            }
+            $total_pages = ceil($total_records / $records_per_page);
+
+
+            // SQL for fetching records for the current page
+            $sql = "SELECT 
+                t.tk_id, 
+                t.tk_summary, 
+                t.tk_priority, 
+                t.tk_created_at, 
+                t.tk_updated_at, 
+                t.tk_due_date as due_date,
+                t.tk_description,
+                t.tk_creator as creator_name,
+                assignee.emp_name as assignee_name,
+                org.org_name,
+                cat.cat_name,
+                t.status_name,
+                log.changed_at
+            " . $base_sql . $where_clause . " ORDER BY t.tk_id DESC LIMIT ? OFFSET ?";
+
+            $params[] = $records_per_page;
+            $params[] = $offset;
+            $types .= 'ii';
 
             // Fetch all tickets
-            if (!empty($params)) {
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param($types, ...$params);
-                $stmt->execute();
-                $result = $stmt->get_result();
-            } else {
-                $result = $conn->query($sql);
-            }
-
-
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param($types, ...$params);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
 
             if ($result && $result->num_rows > 0) {
@@ -194,6 +213,41 @@ if (!empty($user_email)) {
         </tbody>
     </table>
 </div>
+
+<!-- Pagination Controls -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        <?php
+        // Build query string for pagination links
+        $query_params = [];
+        if (!empty($search_query)) $query_params['search'] = $search_query;
+        if (!empty($status_filter)) $query_params['status'] = $status_filter;
+
+        // Previous button
+        if ($page > 1) {
+            $query_params['page'] = $page - 1;
+            echo '<li class="page-item"><a class="page-link" href="?' . http_build_query($query_params) . '">Previous</a></li>';
+        } else {
+            echo '<li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>';
+        }
+
+        // Page number links
+        for ($i = 1; $i <= $total_pages; $i++) {
+            $query_params['page'] = $i;
+            $active_class = ($i == $page) ? 'active' : '';
+            echo '<li class="page-item ' . $active_class . '"><a class="page-link" href="?' . http_build_query($query_params) . '">' . $i . '</a></li>';
+        }
+
+        // Next button
+        if ($page < $total_pages) {
+            $query_params['page'] = $page + 1;
+            echo '<li class="page-item"><a class="page-link" href="?' . http_build_query($query_params) . '">Next</a></li>';
+        } else {
+            echo '<li class="page-item disabled"><a class="page-link" href="#">Next</a></li>';
+        }
+        ?>
+    </ul>
+</nav>
 
 <!-- Offcanvas for Ticket Details -->
 <div class="offcanvas offcanvas-bottom" tabindex="-1" id="ticketDetailsOffcanvas" aria-labelledby="ticketDetailsLabel" style="height: 60vh;">
