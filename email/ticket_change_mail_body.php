@@ -22,7 +22,7 @@
 
     <p>Please log in to the system and review the ticket.</p>
 
-    <p>Regards,<br><?php echo htmlspecialchars(SMTP_FROM_NAME); ?> IT Help Desk System @2025</p>
+    <p>Regards,<br><?php echo htmlspecialchars(SMTP_FROM_NAME); ?> 2025</p>
 </body>
 
 </html>

@@ -41,7 +41,7 @@ if (!empty($user_email)) {
                 <th scope="col">Priority <i class="fas fa-sort-up"></i></th>
                 <th scope="col">Category <i class="fas fa-sort"></i></th>
                 <th scope="col">Status <i class="fas fa-sort"></i></th>
-                <th scope="col">Created <i class="fas fa-sort"></i></th>
+                <th scope="col">Created At <i class="fas fa-sort"></i></th>
                 <th scope="col">Updated At <i class="fas fa-sort"></i></th>
                 <th scope="col">Due Date <i class="fas fa-sort"></i></th>
             </tr>
@@ -63,7 +63,6 @@ if (!empty($user_email)) {
             LEFT JOIN tb_employee assignee ON t.tk_assignee = assignee.emp_id
             LEFT JOIN tb_organization org ON t.org_id = org.org_id
             LEFT JOIN tb_category cat ON t.cat_id = cat.cat_id
-            LEFT JOIN tb_status st ON t.st_id = st.st_id
             LEFT JOIN (
                 SELECT tk_id, MAX(changed_at) AS changed_at
                 FROM tb_ticket_log

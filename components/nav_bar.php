@@ -1,7 +1,7 @@
 <nav id="mainNav" class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="index.php">
-            <img src="assets/sadaharitha_logo_black.png" alt="Company Logo" style="height:30px;" class="me-2">
+            <img src="assets/images.jpeg" alt="Company Logo" style="height:30px; border-radius: 10px;" class="me-2">
             <span>Sadaharitha IT Helpdesk</span>
         </a>
         <div class="collapse navbar-collapse">
